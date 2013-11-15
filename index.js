@@ -1,6 +1,6 @@
 DataGenerator = require("./data_generator");
 
-promisesArray = DataGenerator.buildData(10);
+promisesArray = DataGenerator.buildData(100);
 
 var i, len;
 for(i = 0, len = promisesArray.length; i < len; i++) {

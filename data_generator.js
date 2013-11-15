@@ -67,7 +67,7 @@ function randomTitle() {
 }
 
 function randomTimeout() {
-  return randomTimeoutBetween(100, 5000);
+  return randomTimeoutBetween(100, 10000);
 }
 
 function randomTimeoutBetween(min, max) {
