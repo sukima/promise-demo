@@ -9,9 +9,8 @@
   "author": "",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "grunt": "~0.4.1"
-  },
-  "dependencies": {
+    "grunt": "~0.4.1",
+    "browserify": "~2.35.2",
     "q": "~0.9.7"
   }
 }
