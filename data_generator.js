@@ -44,8 +44,8 @@ exports.buildData = function (size) {
       timeout: randomTimeout(),
       title:   randomTitle()
     });
-    storage.push(dataObject);
     console.log("Created " + dataObject.toString());
+    storage.push(dataObject.start());
   }
   return storage;
 };
