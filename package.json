@@ -10,5 +10,8 @@
   "license": "BSD-2-Clause",
   "devDependencies": {
     "grunt": "~0.4.1"
+  },
+  "dependencies": {
+    "q": "~0.9.7"
   }
 }
