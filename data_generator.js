@@ -41,7 +41,7 @@ exports.buildData = function (size) {
   for (i = 0; i < size; i++) {
     dataObject = new DataObject({
       id:      i,
-      timeout: randomTimeout(100, 5000),
+      timeout: randomTimeout(),
       title:   randomTitle()
     });
     storage.push(dataObject);
@@ -66,7 +66,11 @@ function randomTitle() {
   });
 }
 
-function randomTimeout(min, max) {
+function randomTimeout() {
+  return randomTimeoutBetween(100, 5000);
+}
+
+function randomTimeoutBetween(min, max) {
   return (Math.floor((Math.random() * (max - min) + min) / 10) * 10);
 }
 
