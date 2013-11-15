@@ -1,13 +1,40 @@
+// DataGenerator - A generator for fake data
+//
+// This module uses a random timeout to delay the resolution of any promise.
+// When you create a DataObject it will store the created_on and wait till
+// start() is called. Once that happens it will kick off the timeout and return
+// a promise who's value with be the DataObject instance.
+//
 Q = require("q");
 
 function DataObject(options) { /*jshint eqnull:true */
   if (options == null) {
     options = {};
   }
-  this.id      = options.id;
-  this.title   = options.title;
-  this.timeout = options.timeout || 100;
+  this.id         = options.id;
+  this.title      = options.title;
+  this.timeout    = options.timeout || 10;
+  this.created_on = new Date().getTime();
 }
+
+DataObject.prototype.getRunningTime = function() {
+  if (!this.completed_on) { return -1; }
+  return (this.completed_on - this.created_on);
+};
+
+DataObject.prototype.start = function() {
+  var _this = this;
+  return Q.delay(this.timeout).then(function() {
+    _this.completed_on = new Date().getTime();
+    return _this;
+  });
+};
+
+DataObject.prototype.toString = function()  {
+  var time = this.getRunningTime();
+  time = time === -1 ? "" : ("" + time + " ms - ");
+  return ("" + this.id + ": " + time + this.title);
+};
 
 exports.buildData = function (size) {
   var i, dataObject, storage = [];
@@ -18,6 +45,7 @@ exports.buildData = function (size) {
       title:   randomTitle()
     });
     storage.push(dataObject);
+    console.log("Created " + dataObject.toString());
   }
   return storage;
 };
