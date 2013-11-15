@@ -25,10 +25,10 @@ exports.buildData = function (size) {
 function randomTitle() {
   var renderer = {
     noun: function() {
-      return nouns[Math.floor(Math.random() * noun.length)];
+      return nouns[Math.floor(Math.random() * nouns.length)];
     },
     adjective: function() {
-      return adjectives[Math.floor(Math.random() * adjective.length)];
+      return adjectives[Math.floor(Math.random() * adjectives.length)];
     }
   };
 
