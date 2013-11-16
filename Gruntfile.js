@@ -11,12 +11,23 @@ module.exports = function(grunt) {
       }
     },
 
-    clean: ["index.js"]
+    clean: ["index.js"],
+
+    watch: {
+      scripts: {
+        files: ['src/**/*.js'],
+        tasks: ['build'],
+        options: {
+          livereload: true
+        }
+      }
+    }
 
   });
 
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('build', ['browserify']);
 
