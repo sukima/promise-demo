@@ -30,6 +30,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('build', ['browserify']);
+  grunt.registerTask('default', ['build']);
 
 };
 /* vim:set ts=2 sw=2 et: */
