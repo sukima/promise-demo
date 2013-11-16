@@ -18,5 +18,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
+  grunt.registerTask('build', ['browserify']);
+
 };
 /* vim:set ts=2 sw=2 et: */
