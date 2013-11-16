@@ -9,11 +9,14 @@ module.exports = function(grunt) {
           'index.js': 'src/index.js'
         }
       }
-    }
+    },
+
+    clean: ["index.js"]
 
   });
 
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-contrib-clean');
 
 };
 /* vim:set ts=2 sw=2 et: */
