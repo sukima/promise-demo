@@ -31,6 +31,7 @@ function buildInitialList(size) {
       .appendTo(list);
   }
   console.log("Initialized #list");
+  $("#loading").hide();
 }
 
 function attachCallback(index, promise) {
