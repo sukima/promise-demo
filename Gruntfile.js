@@ -6,12 +6,12 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         files: {
-          'index.js': 'src/index.js'
+          'app.js': 'src/app.js'
         }
       }
     },
 
-    clean: ["index.js"],
+    clean: ['app.js'],
 
     watch: {
       scripts: {
