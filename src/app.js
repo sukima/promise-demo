@@ -1,7 +1,7 @@
-Q = require("q");
-DataGenerator = require("./data_generator");
+var Q = require("q");
+var DataGenerator = require("./data_generator");
 
-promisesArray = DataGenerator.buildData(10000);
+var promisesArray = DataGenerator.buildData(10000);
 
 var i, len, start_time = new Date().getTime();
 for(i = 0, len = promisesArray.length; i < len; i++) {
