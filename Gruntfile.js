@@ -5,8 +5,13 @@ module.exports = function(grunt) {
 
     browserify: {
       dist: {
-        require: {
-          jquery: 'jquery-browserify'
+        options: {
+          shim: {
+            jquery: {
+              path: 'lib/jquery/jquery.js',
+              exports: '$'
+            }
+          }
         },
         files: {
           'app.js': 'src/app.js'
@@ -19,7 +24,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['src/**/*.js'],
-        tasks: ['build'],
+        tasks: ['grunt-browserify'],
         options: {
           livereload: true
         }
