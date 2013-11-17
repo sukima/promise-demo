@@ -11,6 +11,7 @@ function init() {
 
 function start() {
   $("#loading").show();
+  $("#run-info").hide();
   $("#run-btn").prop("disabled", true);
   $("#list").empty();
   numOfTasksComplete = 0;
