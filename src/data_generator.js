@@ -6,6 +6,7 @@
 // a promise who's value with be the DataObject instance.
 //
 Q = require("q");
+promiseWhile = require("./promise_while");
 
 function DataObject(options) { /*jshint eqnull:true */
   if (options == null) {
@@ -37,17 +38,27 @@ DataObject.prototype.toString = function()  {
 };
 
 exports.buildData = function (size) {
-  var i, dataObject, storage = [];
-  for (i = 0; i < size; i++) {
+  var count = 0, storage = [];
+
+  function condition() {
+    return count < size;
+  }
+
+  function worker() {
+    var dataObject;
     dataObject = new DataObject({
-      id:      i,
+      id:      count,
       timeout: randomTimeout(),
       title:   randomTitle()
     });
-    storage.push(dataObject.start());
+    count++;
+    storage.push(dataObject);
   }
-  console.log("Created " + size + " data objects.");
-  return storage;
+
+  return promiseWhile(condition, worker).then(function() {
+    console.log("Created " + size + " data objects.");
+    return storage;
+  });
 };
 
 function randomTitle() {
