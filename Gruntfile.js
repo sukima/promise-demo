@@ -5,6 +5,9 @@ module.exports = function(grunt) {
 
     browserify: {
       dist: {
+        require: {
+          jquery: 'jquery-browserify'
+        },
         files: {
           'app.js': 'src/app.js'
         }

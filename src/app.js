@@ -1,4 +1,5 @@
 var Q = require("q");
+var $ = require("jquery");
 var DataGenerator = require("./data_generator");
 
 var promisesArray = DataGenerator.buildData(10000);
