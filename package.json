@@ -16,7 +16,6 @@
     "grunt-browserify": "~1.2.11",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-watch": "~0.5.3",
-    "jquery-browserify": "~1.8.1",
     "grunt-contrib-connect": "~0.5.0"
   }
 }
