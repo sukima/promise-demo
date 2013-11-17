@@ -1,8 +1,9 @@
 var Q = require("q");
 var $ = require("jquery");
 var DataGenerator = require("./data_generator");
+var promiseWhile = require("./promise_while");
 
-var start_time, promises_array, numOfTasksComplete;
+var start_time, numOfTasksComplete;
 var number_of_objects = 10000; // Is that a lot? 😱
 
 function init() {
@@ -16,17 +17,26 @@ function start() {
   $("#list").empty();
   numOfTasksComplete = 0;
   start_time = new Date().getTime();
-  buildInitialList(number_of_objects);
-  promises_array = DataGenerator.buildData(number_of_objects);
-  $.each(promises_array, attachCallback);
-  Q.all(promises_array).then(function() {
-    var time = calculateTime();
-    console.log("Completed all tasks in " + time + " ms!");
-    $("#info").text("Done. " + promises_array.length + " objects processed in " + time + " ms.");
-    $("#run-btn").prop("disabled", false);
-  }).done();
-  $("#loading").hide();
   updateCount();
+  Q.delay(100).then(function() {
+    var waitingForInitialList = buildInitialList(number_of_objects);
+    var waitingForDataGenerator = DataGenerator.buildData(number_of_objects);
+    Q.all([waitingForInitialList, waitingForDataGenerator])
+      .then(function(promises) {
+        $("#loading").hide();
+        $("#run-info").show();
+        return promises;
+      })
+      .get(1).then(processData)
+      .then(function(promises_array) {
+        var time = calculateTime();
+        $("#run-info").hide();
+        console.log("Completed all tasks in " + time + " ms!");
+        $("#info").text("Done. " + promises_array.length + " objects processed in " + time + " ms.");
+        $("#run-btn").prop("disabled", false);
+      }).done();
+  });
+  console.log("And go...");
 }
 
 function calculateTime() {
@@ -34,24 +44,55 @@ function calculateTime() {
 }
 
 function buildInitialList(size) {
-  var i, li = $("<li/>"), list = $("#list");
-  for (i = 0; i < size; i++) {
+  var count = 0, li = $("<li/>"), list = $("#list");
+
+  function condition() {
+    return count < size;
+  }
+
+  function worker() {
     li.clone()
-      .attr("id", "item-" + i)
+      .attr("id", "item-" + count)
       .text("Pending...")
       .appendTo(list);
+    count++;
   }
-  console.log("Initialized #list");
+
+  return promiseWhile(condition, worker).then(function() {
+    console.log("Initialized #list");
+  });
 }
 
-function attachCallback(index, promise) {
-  promise.then(fillListItem).done();
+function processData(dataObjects) {
+  var data;
+  var promises = [];
+  var count = 0;
+  var size = dataObjects.length;
+
+  function condition() {
+    return count < size;
+  }
+
+  function worker() {
+    data = dataObjects[count].start().then(fillListItem);
+    promises.push(data);
+    count++;
+  }
+
+  return promiseWhile(condition, worker).then(function() {
+    return Q.all(promises);
+  });
+}
+
+function attachCallback(dataObject) {
+  return dataObject.start().then(fillListItem);
 }
 
 function fillListItem(data) {
   numOfTasksComplete++;
   updateCount();
   $("#item-" + data.id).text(data.toString());
+  return data;
 }
 
 function updateCount() {
