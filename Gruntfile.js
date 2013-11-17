@@ -29,6 +29,17 @@ module.exports = function(grunt) {
           livereload: true
         }
       }
+    },
+
+    connect: {
+      server: {
+        options: {
+          port: 9000,
+          // change this to '0.0.0.0' to access the server from outside
+          hostname: 'localhost',
+          livereload: true
+        }
+      }
     }
 
   });
@@ -36,9 +47,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
   grunt.registerTask('build', ['browserify']);
   grunt.registerTask('default', ['build']);
+  grunt.registerTask('server', ['connect', 'watch']);
 
 };
 /* vim:set ts=2 sw=2 et: */
