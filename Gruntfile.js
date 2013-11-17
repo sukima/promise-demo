@@ -24,7 +24,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['index.html', 'src/**/*.js'],
-        tasks: ['grunt-browserify'],
+        tasks: ['build'],
         options: {
           livereload: true
         }
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', ['browserify']);
   grunt.registerTask('default', ['build']);
-  grunt.registerTask('server', ['connect', 'watch']);
+  grunt.registerTask('server', ['build', 'connect', 'watch']);
 
 };
 /* vim:set ts=2 sw=2 et: */
