@@ -25,6 +25,7 @@ function start() {
     $("#run-btn").prop("disabled", false);
   }).done();
   $("#loading").hide();
+  updateCount();
 }
 
 function calculateTime() {
@@ -48,8 +49,12 @@ function attachCallback(index, promise) {
 
 function fillListItem(data) {
   numOfTasksComplete++;
-  $("#count").text("" + numOfTasksComplete + " (" + calculateTime() + " ms)");
+  updateCount();
   $("#item-" + data.id).text(data.toString());
+}
+
+function updateCount() {
+  $("#count").text("" + numOfTasksComplete + " (" + calculateTime() + " ms)");
 }
 
 $(init);
