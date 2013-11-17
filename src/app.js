@@ -13,6 +13,7 @@ function init() {
 function start() {
   $("#loading").show();
   $("#run-info").hide();
+  $("#info").show();
   $("#run-btn").prop("disabled", true);
   $("#list").empty();
   numOfTasksComplete = 0;
@@ -32,7 +33,7 @@ function start() {
         var time = calculateTime();
         $("#run-info").hide();
         console.log("Completed all tasks in " + time + " ms!");
-        $("#info").text("Done. " + promises_array.length + " objects processed in " + time + " ms.");
+        $("#info").show().text("Done. " + promises_array.length + " objects processed in " + time + " ms.");
         $("#run-btn").prop("disabled", false);
       }).done();
   });
