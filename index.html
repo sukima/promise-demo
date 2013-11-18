@@ -7,16 +7,14 @@
   <script src="app.js"></script>
 </head>
 <body>
-  <div id="controls">
-    <button id="run-btn">Run</button>
-  </div>
   <div id="loading" class="overlay" style="display:none">
     <img src="images/loading.gif" alt="Loading...">
   </div>
-  <div id="output">
-    <div id="run-info" style="display:none">Processed <span id="count">0</span> data objects.</div>
+  <div id="controls">
+    <div><button id="run-btn" class="runner">Run</button></div>
+    <div id="run-info" style="display:none" class="pending">Processed <span id="count">0</span> data objects.</div>
     <div id="info" style="display:none"></div>
-    <ul id="list"></ul>
   </div>
+  <div id="list"></div>
 </body>
 </html>
