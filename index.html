@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Promises Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js"></script>
+</head>
+<body>
+  <div id="github-ribbon">
+    <a href="https://github.com/sukima/promise-demo"><img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+  </div>
+  <div id="loading" class="overlay" style="display:none">
+    <img src="images/loading.gif" alt="Loading...">
+  </div>
+  <div id="controls">
+    <div><button id="run-btn" class="runner">Run</button></div>
+    <div>
+      <input id="allow-failures" type="checkbox" checked="checked">
+      <label for="allow-failures">Allow Failures</label>
+    </div>
+    <div id="run-info" style="display:none" class="pending">Processed <span id="count">0</span> data objects.</div>
+    <div id="info" style="display:none"></div>
+  </div>
+  <div id="list"></div>
+</body>
+</html>
