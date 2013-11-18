@@ -2,12 +2,18 @@
   "name": "promise-demo",
   "version": "0.0.1",
   "description": "I promise this is a demo on promises",
-  "main": "index.js",
+  "license": "http://tritarget.org/wywtpl",
+  "author": "Devin Weaver (@sukima) <suki@tritarget.org>",
+  "contributors": [
+    { "name": "Justin Gill", "email": "jgillcentral@gmail.com" }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sukima/promise-demo.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "BSD-2-Clause",
   "devDependencies": {
     "grunt": "~0.4.1",
     "browserify": "~2.35.2",

@@ -38,3 +38,11 @@ about 10,230 ms (a little over **10 seconds!**) Everything ran all at once!
 
 This is the power of asynchronous execution and promises makes it a breeze to
 conceptualize and manage.
+
+## License
+
+    This program is free software. It comes without any warranty, to
+    the extent permitted by applicable law. You can redistribute it
+    and/or modify it under the terms of the Do What You Want To Public
+    License, Version 3, as published by Devin Weaver. See
+    http://tritarget.org/wywtpl/COPYING for more details.
