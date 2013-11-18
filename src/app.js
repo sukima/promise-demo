@@ -3,7 +3,7 @@ var $ = require("jquery");
 var DataGenerator = require("./data_generator");
 var promiseWhile = require("./promise_while");
 
-var start_time, numOfTasksComplete, listItems;
+var start_time, numOfTasksComplete, listItems, allFulfilled;
 var number_of_objects = 1000; // Is that a lot? 😱
 
 function init() {
@@ -12,6 +12,7 @@ function init() {
 
 function start() {
   resetInfo();
+  allFulfilled = true;
   numOfTasksComplete = 0;
   start_time = new Date().getTime();
   updateCount();
@@ -90,13 +91,14 @@ function processData(dataObjects) {
   }
 
   function worker() {
-    data = dataObjects[count].start().then(fillListItem);
+    data = dataObjects[count].start()
+      .then(fulfillListItem, failListItem);
     promises.push(data);
     count++;
   }
 
   return promiseWhile(condition, worker).then(function() {
-    return Q.all(promises);
+    return Q.allSettled(promises);
   });
 }
 
@@ -104,13 +106,30 @@ function attachCallback(dataObject) {
   return dataObject.start().then(fillListItem);
 }
 
-function fillListItem(data) {
+function fulfillListItem(item) {
+  listItemInfo(item, true);
+  return item;
+}
+
+function failListItem(item) {
+  allFulfilled = false;
+  listItemInfo(item, false);
+  return item;
+}
+
+function listItemInfo(data, fulfilled) {
+  /*jshint eqnull:true */
+  if (fulfilled == null) {
+    fulfilled = true;
+  }
+
   numOfTasksComplete++;
   updateCount();
   $(listItems.get(data.id))
     .removeClass("pending")
-    .addClass("fulfilled")
+    .addClass(fulfilled ? "fulfilled" : "rejected")
     .text(data.toString());
+
   return data;
 }
 
