@@ -16,6 +16,7 @@ function DataObject(options) { /*jshint eqnull:true */
   this.title      = options.title;
   this.timeout    = options.timeout || 10;
   this.created_on = new Date().getTime();
+  this.isABadWorker = options.allowFailures ? randomFail() : false;
 }
 
 DataObject.prototype.getRunningTime = function() {
@@ -27,6 +28,9 @@ DataObject.prototype.start = function() {
   var _this = this;
   return Q.delay(this.timeout).then(function() {
     _this.completed_on = new Date().getTime();
+    if (_this.isABadWorker) {
+      throw _this;
+    }
     return _this;
   });
 };
@@ -37,7 +41,7 @@ DataObject.prototype.toString = function()  {
   return ("" + this.id + ": " + time + this.title);
 };
 
-exports.buildData = function (size) {
+exports.buildData = function (size, allowFailures) {
   var count = 0, storage = [];
 
   function condition() {
@@ -47,9 +51,10 @@ exports.buildData = function (size) {
   function worker() {
     var dataObject;
     dataObject = new DataObject({
-      id:      count,
-      timeout: randomTimeout(),
-      title:   randomTitle()
+      id:            count,
+      timeout:       randomTimeout(),
+      title:         randomTitle(),
+      allowFailures: allowFailures
     });
     count++;
     storage.push(dataObject);
@@ -83,6 +88,10 @@ function randomTimeout() {
 
 function randomTimeoutBetween(min, max) {
   return (Math.floor((Math.random() * (max - min) + min) / 10) * 10);
+}
+
+function randomFail() {
+  return (Math.random() > 0.95);
 }
 
 var phrases = [
