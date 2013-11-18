@@ -4,7 +4,6 @@ var DataGenerator = require("./data_generator");
 var promiseWhile = require("./promise_while");
 
 var start_time, numOfTasksComplete, listItems, allFulfilled;
-var number_of_objects = 1000; // Is that a lot? 😱
 
 function init() {
   $("#run-btn").click(start);
@@ -12,33 +11,65 @@ function init() {
 
 function start() {
   var allowFailures = $("#allow-failures").is(":checked");
-  resetInfo();
-  allFulfilled = true;
-  numOfTasksComplete = 0;
-  start_time = new Date().getTime();
-  updateCount();
-  Q.delay(100).then(function() {
-    var waitingForInitialList = buildInitialList(number_of_objects);
-    var waitingForDataGenerator = DataGenerator.buildData(number_of_objects, allowFailures);
-    Q.all([waitingForInitialList, waitingForDataGenerator])
-      .then(function(promises) {
-        readyForOutput();
-        listItems = promises[0];
-        return promises[1];
-      })
-      .then(processData)
-      .then(function(promises_array) {
-        var time = calculateTime();
-        console.log("Completed all tasks in " + time + " ms!");
-        updateInfo("Done. " + promises_array.length + " objects processed in " + time + " ms.");
-      }).done();
+  var number_of_objects = $("#data-size").val();
+  validateDataSize(number_of_objects).then(function() {
+    resetInfo();
+    allFulfilled = true;
+    numOfTasksComplete = 0;
+    start_time = new Date().getTime();
+    updateCount();
+    Q.delay(100).then(function() {
+      var waitingForInitialList = buildInitialList(number_of_objects);
+      var waitingForDataGenerator = DataGenerator.buildData(number_of_objects, allowFailures);
+      Q.all([waitingForInitialList, waitingForDataGenerator])
+        .then(function(promises) {
+          readyForOutput();
+          listItems = promises[0];
+          return promises[1];
+        })
+        .then(processData)
+        .then(function(promises_array) {
+          var time = calculateTime();
+          console.log("Completed all tasks in " + time + " ms!");
+          updateInfo("Done. " + promises_array.length + " objects processed in " + time + " ms.");
+        }).done();
+    });
+    console.log("And go...");
+  }, function(number_of_objects) {
+    console.log("" + number_of_objects + " objects is too much; user cancled action.");
   });
-  console.log("And go...");
+}
+
+function validateDataSize(size) {
+  if (size >= 90000) {
+    return sizeConfirmation("Gulp! I really think that is too high. Blue smoke will probubly come out the back of your computer! Are you absolutly sure?");
+  }
+  if (size >= 50000) {
+    return sizeConfirmation("Whoa Nelly! That's a lot! The browser will probubly cry. Are you really sure you want to do this?");
+  }
+  if (size >= 10000) {
+    return sizeConfirmation("That's getting a little heavy. Are you sure you want to bog your browser down?");
+  }
+  return Q(true);
+}
+
+function sizeConfirmation(message) {
+  var defer = Q.defer();
+  Q.fcall(confirm, message).then(function(confirmed) {
+    if (confirmed) {
+      defer.resolve();
+    }
+    else {
+      defer.reject();
+    }
+  });
+  return defer.promise;
 }
 
 function resetInfo() {
   $("#run-btn").prop("disabled", true);
   $("#allow-failures").prop("disabled", true);
+  $("#data-size").prop("disabled", true);
   $("#list").empty();
   $("#loading").show();
   $("#info").hide();
@@ -54,6 +85,7 @@ function updateInfo(text) {
   $("#run-info").hide();
   $("#run-btn").prop("disabled", false);
   $("#allow-failures").prop("disabled", false);
+  $("#data-size").prop("disabled", false);
 
   $("#info")
     .removeClass("fulfilled").removeClass("rejected")
