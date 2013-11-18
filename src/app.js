@@ -4,7 +4,7 @@ var DataGenerator = require("./data_generator");
 var promiseWhile = require("./promise_while");
 
 var start_time, numOfTasksComplete, listItems;
-var number_of_objects = 10000; // Is that a lot? 😱
+var number_of_objects = 1000; // Is that a lot? 😱
 
 function init() {
   $("#run-btn").click(start);
