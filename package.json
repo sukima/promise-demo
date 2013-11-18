@@ -5,7 +5,10 @@
   "license": "http://tritarget.org/wywtpl",
   "author": "Devin Weaver (@sukima) <suki@tritarget.org>",
   "contributors": [
-    { "name": "Justin Gill", "email": "jgillcentral@gmail.com" }
+    {
+      "name": "Justin Gill",
+      "email": "jgillcentral@gmail.com"
+    }
   ],
   "repository": {
     "type": "git",
