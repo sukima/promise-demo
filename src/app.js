@@ -107,10 +107,6 @@ function processData(dataObjects) {
   });
 }
 
-function attachCallback(dataObject) {
-  return dataObject.start().then(fillListItem);
-}
-
 function fulfillListItem(item) {
   listItemInfo(item, true);
   return item;
@@ -123,11 +119,6 @@ function failListItem(item) {
 }
 
 function listItemInfo(data, fulfilled) {
-  /*jshint eqnull:true */
-  if (fulfilled == null) {
-    fulfilled = true;
-  }
-
   numOfTasksComplete++;
   updateCount();
   $(listItems.get(data.id))
