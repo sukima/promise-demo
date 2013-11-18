@@ -55,7 +55,9 @@ function updateInfo(text) {
   $("#run-btn").prop("disabled", false);
   $("#allow-failures").prop("disabled", false);
 
-  $("#info").addClass(allFulfilled ? "fulfilled" : "rejected")
+  $("#info")
+    .removeClass("fulfilled").removeClass("rejected")
+    .addClass(allFulfilled ? "fulfilled" : "rejected")
     .text(text).show();
 }
 
