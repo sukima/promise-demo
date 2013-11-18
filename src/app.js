@@ -3,7 +3,7 @@ var $ = require("jquery");
 var DataGenerator = require("./data_generator");
 var promiseWhile = require("./promise_while");
 
-var start_time, numOfTasksComplete;
+var start_time, numOfTasksComplete, listItems;
 var number_of_objects = 10000; // Is that a lot? 😱
 
 function init() {
@@ -26,9 +26,10 @@ function start() {
       .then(function(promises) {
         $("#loading").hide();
         $("#run-info").show();
-        return promises;
+        listItems = promises[0];
+        return promises[1];
       })
-      .get(1).then(processData)
+      .then(processData)
       .then(function(promises_array) {
         var time = calculateTime();
         $("#run-info").hide();
@@ -45,22 +46,23 @@ function calculateTime() {
 }
 
 function buildInitialList(size) {
-  var count = 0, li = $("<li/>"), list = $("#list");
+  var list_items = "";
+  var count = 0;
 
   function condition() {
     return count < size;
   }
 
   function worker() {
-    li.clone()
-      .attr("id", "item-" + count)
-      .text("Pending...")
-      .appendTo(list);
+    list_items += "<li>Pending...</li>";
     count++;
   }
 
   return promiseWhile(condition, worker).then(function() {
+    var list = $("#list").empty().append(list_items);
+    console.log(list);
     console.log("Initialized #list");
+    return list.children();
   });
 }
 
@@ -92,7 +94,7 @@ function attachCallback(dataObject) {
 function fillListItem(data) {
   numOfTasksComplete++;
   updateCount();
-  $("#item-" + data.id).text(data.toString());
+  $(listItems.get(data.id)).text(data.toString());
   return data;
 }
 
