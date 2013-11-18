@@ -11,11 +11,7 @@ function init() {
 }
 
 function start() {
-  $("#loading").show();
-  $("#run-info").hide();
-  $("#info").hide();
-  $("#run-btn").prop("disabled", true);
-  $("#list").empty();
+  resetInfo();
   numOfTasksComplete = 0;
   start_time = new Date().getTime();
   updateCount();
@@ -24,21 +20,39 @@ function start() {
     var waitingForDataGenerator = DataGenerator.buildData(number_of_objects);
     Q.all([waitingForInitialList, waitingForDataGenerator])
       .then(function(promises) {
-        $("#loading").hide();
-        $("#run-info").show();
+        readyForOutput();
         listItems = promises[0];
         return promises[1];
       })
       .then(processData)
       .then(function(promises_array) {
         var time = calculateTime();
-        $("#run-info").hide();
         console.log("Completed all tasks in " + time + " ms!");
-        $("#info").show().text("Done. " + promises_array.length + " objects processed in " + time + " ms.");
-        $("#run-btn").prop("disabled", false);
+        updateInfo("Done. " + promises_array.length + " objects processed in " + time + " ms.");
       }).done();
   });
   console.log("And go...");
+}
+
+function resetInfo() {
+  $("#run-btn").prop("disabled", true);
+  $("#list").empty();
+  $("#loading").show();
+  $("#info").hide();
+  $("#run-info").hide();
+}
+
+function readyForOutput() {
+  $("#loading").hide();
+  $("#run-info").show();
+}
+
+function updateInfo(text) {
+  $("#run-info").hide();
+  $("#run-btn").prop("disabled", false);
+
+  $("#info").addClass(allFulfilled ? "fulfilled" : "rejected")
+    .text(text).show();
 }
 
 function calculateTime() {
@@ -54,7 +68,7 @@ function buildInitialList(size) {
   }
 
   function worker() {
-    list_items += "<li>" + count + ": Pending...</li>";
+    list_items += '<div class="list-item pending">' + count + ': Pending...</div>';
     count++;
   }
 
@@ -93,7 +107,10 @@ function attachCallback(dataObject) {
 function fillListItem(data) {
   numOfTasksComplete++;
   updateCount();
-  $(listItems.get(data.id)).text(data.toString());
+  $(listItems.get(data.id))
+    .removeClass("pending")
+    .addClass("fulfilled")
+    .text(data.toString());
   return data;
 }
 
