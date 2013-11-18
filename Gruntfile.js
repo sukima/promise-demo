@@ -19,7 +19,7 @@ module.exports = function(grunt) {
       }
     },
 
-    clean: ['app.js'],
+    clean: ['app.js', 'style.css'],
 
     watch: {
       scripts: {
