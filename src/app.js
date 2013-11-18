@@ -13,7 +13,7 @@ function init() {
 function start() {
   $("#loading").show();
   $("#run-info").hide();
-  $("#info").show();
+  $("#info").hide();
   $("#run-btn").prop("disabled", true);
   $("#list").empty();
   numOfTasksComplete = 0;
@@ -54,13 +54,12 @@ function buildInitialList(size) {
   }
 
   function worker() {
-    list_items += "<li>Pending...</li>";
+    list_items += "<li>" + count + ": Pending...</li>";
     count++;
   }
 
   return promiseWhile(condition, worker).then(function() {
     var list = $("#list").empty().append(list_items);
-    console.log(list);
     console.log("Initialized #list");
     return list.children();
   });
