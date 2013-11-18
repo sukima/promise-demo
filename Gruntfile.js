@@ -23,11 +23,13 @@ module.exports = function(grunt) {
 
     watch: {
       scripts: {
-        files: ['index.html', 'src/**/*.js'],
+        files: ['src/**/*.js'],
         tasks: ['build'],
-        options: {
-          livereload: true
-        }
+        options: { livereload: true }
+      },
+      html: {
+        files: ['index.html', 'style.css'],
+        options: { livereload: true }
       }
     },
 
