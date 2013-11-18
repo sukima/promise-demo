@@ -24,11 +24,16 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['src/**/*.js'],
-        tasks: ['build'],
+        tasks: ['browserify'],
         options: { livereload: true }
       },
       html: {
         files: ['index.html', 'style.css'],
+        options: { livereload: true }
+      },
+      style: {
+        files: ['styles/**/*.styl'],
+        tasks: ['stylus'],
         options: { livereload: true }
       }
     },
@@ -42,6 +47,17 @@ module.exports = function(grunt) {
           livereload: true
         }
       }
+    },
+
+    stylus: {
+      compile: {
+        options: {
+          urlfunc: 'embedurl' // use embedurl('test.png') in our code to trigger Data URI embedding
+        },
+        files: {
+          'style.css': 'styles/**/*.styl'
+        }
+      }
     }
 
   });
@@ -50,8 +66,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-stylus');
 
-  grunt.registerTask('build', ['browserify']);
+  grunt.registerTask('build', ['browserify', 'stylus']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('server', ['build', 'connect', 'watch']);
 
