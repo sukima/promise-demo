@@ -2,3 +2,4 @@
 app.js
 style.css
 node_modules/
+.grunt/

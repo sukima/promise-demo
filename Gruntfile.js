@@ -58,6 +58,10 @@ module.exports = function(grunt) {
           'style.css': 'styles/**/*.styl'
         }
       }
+    },
+
+    'gh-pages': {
+      src: ['images/**', 'style.css', 'app.js', 'index.html']
     }
 
   });
@@ -67,10 +71,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-stylus');
+  grunt.loadNpmTasks('grunt-gh-pages');
 
   grunt.registerTask('build', ['browserify', 'stylus']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('server', ['build', 'connect', 'watch']);
+  grunt.registerTask('deploy', ['build', 'gh-pages']);
 
 };
 /* vim:set ts=2 sw=2 et: */
