@@ -11,6 +11,7 @@ function init() {
 }
 
 function start() {
+  var allowFailures = $("#allow-failures").is(":checked");
   resetInfo();
   allFulfilled = true;
   numOfTasksComplete = 0;
@@ -18,7 +19,7 @@ function start() {
   updateCount();
   Q.delay(100).then(function() {
     var waitingForInitialList = buildInitialList(number_of_objects);
-    var waitingForDataGenerator = DataGenerator.buildData(number_of_objects);
+    var waitingForDataGenerator = DataGenerator.buildData(number_of_objects, allowFailures);
     Q.all([waitingForInitialList, waitingForDataGenerator])
       .then(function(promises) {
         readyForOutput();
@@ -37,6 +38,7 @@ function start() {
 
 function resetInfo() {
   $("#run-btn").prop("disabled", true);
+  $("#allow-failures").prop("disabled", true);
   $("#list").empty();
   $("#loading").show();
   $("#info").hide();
@@ -51,6 +53,7 @@ function readyForOutput() {
 function updateInfo(text) {
   $("#run-info").hide();
   $("#run-btn").prop("disabled", false);
+  $("#allow-failures").prop("disabled", false);
 
   $("#info").addClass(allFulfilled ? "fulfilled" : "rejected")
     .text(text).show();
