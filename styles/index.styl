@@ -1,0 +1,63 @@
+body
+  margin  0
+  padding 0
+
+.overlay
+  background-color #000
+  opacity          0.7
+  filter           'alpha(opacity=70)'
+  position         absolute
+  top              0
+  left             0
+  width            100%
+  height           100%
+  z-index          10
+
+  img
+    position absolute
+    top      45%
+    left     45%
+
+#controls
+  background-color   white
+  padding            0
+  margin             0
+  border-bottom      thin solid black
+  position           fixed
+  top                0
+  -webkit-box-shadow 0px 5px 0px 0px rgba(0, 0, 0, 0.3)
+  box-shadow         0px 5px 0px 0px rgba(0, 0, 0, 0.3)
+  width              100%
+
+  div
+    display inline-block
+    margin  0 5px
+    padding 10px
+
+#list
+  margin-top 75px
+
+.list-item
+  display    inline-block
+  overflow-y hidden
+  height     25px
+  width      350px
+  margin     10px
+  padding    10px
+
+.pending
+  color            #3a87ad
+  background-color #d9edf7
+  border-color     #bce8f1
+
+.fulfilled
+  color            #468847
+  background-color #dff0d8
+  border-color     #d6e9c6
+
+.rejected
+  color            #b94a48
+  background-color #f2dede
+  border-color     #eed3d7
+
+@import runner_button
