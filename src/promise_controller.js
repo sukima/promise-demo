@@ -96,6 +96,29 @@ PromiseController.prototype.validateDataSize = function validateDataSize() {
 };
 
 
+// PromiseController::buildDom {{{1
+PromiseController.prototype.buildDom = function buildDom() {
+  var _this = this;
+  var list_items = "";
+  var count = 0;
+  var size = this.dataSetSize();
+
+  function condition() {
+    return count < size;
+  }
+
+  function worker() {
+    list_items += '<div class="list-item pending">' + count + ': Pending...</div>';
+    count++;
+  }
+
+  return promiseWhile(condition, worker).then(function() {
+    _this.content_list.empty().append(list_items);
+    return _this.content_list.children();
+  });
+};
+
+
 // Helper functions {{{1
 // promiseConfirmation {{{2
 function promiseConfirmation(message) {
