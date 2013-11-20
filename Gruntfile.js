@@ -32,7 +32,7 @@ module.exports = function(grunt) {
         options: { livereload: true }
       },
       html: {
-        files: ['index.html', 'style.css'],
+        files: ['index.html', 'styles/**/*.css'],
         options: { livereload: true }
       },
       style: {
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
     },
 
     'gh-pages': {
-      src: ['images/**', 'style.css', 'app.js', 'index.html']
+      src: ['images/**', 'style.css', 'styles/**/*.css', 'styles/images/*', 'app.js', 'index.html']
     }
 
   });
