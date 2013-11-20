@@ -24,7 +24,6 @@ function PromiseController() {
 // PromiseController::init {{{1
 PromiseController.prototype.init = function init() {
   this.controls.run_button.click($.proxy(this, "start"));
-  // $("#notice").dialog();
   return this;
 };
 

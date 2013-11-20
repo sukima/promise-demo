@@ -11,8 +11,18 @@ function ConfirmationController() {
     autoOpen:  false,
     close:     $.proxy(this, "resolve"),
     buttons: {
-      "Cancel":      $.proxy(this, "onButtonClick", "cancel"),
-      "Yes, Do It!": $.proxy(this, "onButtonClick", "go")
+      cancel: {
+        text:     "Cancel",
+        "class":  "ui-priority-primary",
+        priority: "primary",
+        click:    $.proxy(this, "onButtonClick", "cancel"),
+      },
+      go: {
+        text:     "Yes, do it!",
+        "class":  "ui-priority-secondary",
+        priority: "secondary",
+        click:    $.proxy(this, "onButtonClick", "go")
+      }
     }
   });
 }
