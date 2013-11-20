@@ -59,7 +59,7 @@ module.exports = function(grunt) {
           urlfunc: 'embedurl' // use embedurl('test.png') in our code to trigger Data URI embedding
         },
         files: {
-          'style.css': 'styles/**/*.styl'
+          'style.css': 'styles/index.styl'
         }
       }
     },
