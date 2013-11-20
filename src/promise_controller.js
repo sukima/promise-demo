@@ -1,9 +1,9 @@
 // PromiseController - Control the building and displaying of data objects
-var Q = require("q");
-var $ = require("jquery");
-var DataGenerator = require("./data_generator");
-var promiseWhile = require("./promise_while");
+var Q                      = require("q");
+var $                      = require("jquery");
+var DataGenerator          = require("./data_generator");
 var ConfirmationController = require("./confirmation_controller");
+var promiseWhile           = require("./promise_while");
 
 // PromiseController {{{1
 function PromiseController() {
@@ -21,7 +21,6 @@ function PromiseController() {
   this.content_list = $("#list");
 }
 
-
 // PromiseController::init {{{1
 PromiseController.prototype.init = function init() {
   this.controls.run_button.click($.proxy(this, "start"));
@@ -29,18 +28,15 @@ PromiseController.prototype.init = function init() {
   return this;
 };
 
-
 // PromiseController::allowFailures {{{1
 PromiseController.prototype.allowFailures = function allowFailures() {
   return this.controls.allow_failues.is(":checked");
 };
 
-
 // PromiseController::dataSetSize {{{1
 PromiseController.prototype.dataSetSize = function dataSetSize() {
   return this.controls.data_size.val();
 };
-
 
 // PromiseController::start {{{1
 PromiseController.prototype.start = function start() {
@@ -78,7 +74,6 @@ PromiseController.prototype.start = function start() {
   }).fail($.proxy(this, "finish"));
 };
 
-
 // PromiseController::enableControls {{{1
 PromiseController.prototype.enableControls = function enableControls() {
   for (var control in this.controls) {
@@ -86,7 +81,6 @@ PromiseController.prototype.enableControls = function enableControls() {
   }
   return arguments[0];
 };
-
 
 // PromiseController::disableControls {{{1
 PromiseController.prototype.disableControls= function disableControls() {
@@ -96,13 +90,11 @@ PromiseController.prototype.disableControls= function disableControls() {
   return arguments[0];
 };
 
-
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
   this.loading_overlay.show();
   return arguments[0];
 };
-
 
 // PromiseController::hideLoading {{{1
 PromiseController.prototype.hideLoading = function hideLoading() {
@@ -110,13 +102,11 @@ PromiseController.prototype.hideLoading = function hideLoading() {
   return arguments[0];
 };
 
-
 // PromiseController::finish {{{1
 PromiseController.prototype.finish = function finish() {
   this.hideLoading();
   this.enableControls();
 };
-
 
 // PromiseController::validateDataSize {{{1
 PromiseController.prototype.validateDataSize = function validateDataSize() {
@@ -137,7 +127,6 @@ PromiseController.prototype.validateDataSize = function validateDataSize() {
   }
   return confirmation.open(message).promise();
 };
-
 
 // PromiseController::buildDom {{{1
 PromiseController.prototype.buildDom = function buildDom() {
@@ -161,12 +150,10 @@ PromiseController.prototype.buildDom = function buildDom() {
   });
 };
 
-
 // PromiseController::generateData {{{1
 PromiseController.prototype.generateData = function generateData() {
   return DataGenerator.buildData(this.dataSetSize(), this.allowFailures());
 };
-
 
 // PromiseController::execute {{{1
 PromiseController.prototype.execute = function execute(data_set) {
@@ -213,7 +200,6 @@ PromiseController.prototype.execute = function execute(data_set) {
   });
 };
 
-
 // PromiseController::displayResult {{{1
 PromiseController.prototype.displayResult = function displayResult(allFulfilled, data_set) {
   this.end_time = new Date().getTime();
@@ -225,13 +211,11 @@ PromiseController.prototype.displayResult = function displayResult(allFulfilled,
     .show();
 };
 
-
 // PromiseController::setupInfoDisplay {{{1
 PromiseController.prototype.setupInfoDisplay = function setupInfoDisplay() {
   this.info_divs.summary.hide();
   this.info_divs.live_update.show();
 };
-
 
 // PromiseController::resolveDataObject {{{1
 PromiseController.prototype.resolveDataObject = function resolveDataObject(data) {
@@ -243,12 +227,10 @@ PromiseController.prototype.resolveDataObject = function resolveDataObject(data)
     .text(data.toString());
 };
 
-
 // PromiseController::displayCount {{{1
 PromiseController.prototype.displayCount = function displayCount() {
   this.info_divs.count.text("" + this.tasks_complete + " (" + this.calculateTime() + " ms)");
 };
-
 
 // PromiseController::calculateTime {{{1
 PromiseController.prototype.calculateTime = function calculateTime() {
