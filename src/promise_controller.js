@@ -41,6 +41,43 @@ PromiseController.prototype.dataSetSize = function dataSetSize() {
 };
 
 
+// PromiseController::start {{{1
+PromiseController.prototype.start = function start() {
+  var _this = this;
+  this.disableControls();
+
+  var waitForValidation = this.validateDataSize();
+  waitForValidation.then($.proxy(this, "showLoading"));
+  return waitForValidation.then(function() {
+    _this.tasks_complete = 0;
+    _this.start_time = new Date().getTime();
+    _this.end_time = null;
+
+    var waitForDOM  = waitForValidation.delay(1).then($.proxy(_this, "buildDom"));
+    waitForDOM.then(function(items) {
+      _this.content_list_items = items;
+    });
+
+    var waitForData = waitForValidation.delay(1).then($.proxy(_this, "generateData"));
+
+    var waitForSetup = Q.all([waitForDOM, waitForData]);
+    waitForSetup.then($.proxy(_this, "setupInfoDisplay"));
+    waitForSetup.then($.proxy(_this, "hideLoading"));
+
+    var waitForExecution = waitForSetup
+      .get(1).then($.proxy(_this, "execute"));
+
+    return waitForExecution
+      .then(
+        $.proxy(_this, "displayResult", true),
+        $.proxy(_this, "displayResult", false),
+        $.proxy(_this, "resolveDataObject")
+      )
+      .fin($.proxy(_this, "finish"));
+  }).fail($.proxy(this, "finish"));
+};
+
+
 // PromiseController::enableControls {{{1
 PromiseController.prototype.enableControls = function enableControls() {
   for (var control in this.controls) {
