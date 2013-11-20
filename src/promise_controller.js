@@ -23,7 +23,8 @@ function PromiseController() {
 
 // PromiseController::init {{{1
 PromiseController.prototype.init = function init() {
-  this.controls.run_button.click($.proxy(this, "start"));
+  this.controls.run_button.button()
+    .click($.proxy(this, "start"));
   return this;
 };
 
@@ -75,17 +76,17 @@ PromiseController.prototype.start = function start() {
 
 // PromiseController::enableControls {{{1
 PromiseController.prototype.enableControls = function enableControls() {
-  for (var control in this.controls) {
-    this.controls[control].prop("disabled", false);
-  }
+  this.controls.run_button.button("enable");
+  this.controls.data_size.prop("disabled", false);
+  this.controls.allow_failues.prop("disabled", false);
   return arguments[0];
 };
 
 // PromiseController::disableControls {{{1
 PromiseController.prototype.disableControls= function disableControls() {
-  for (var control in this.controls) {
-    this.controls[control].prop("disabled", true);
-  }
+  this.controls.run_button.button("disable");
+  this.controls.data_size.prop("disabled", true);
+  this.controls.allow_failues.prop("disabled", true);
   return arguments[0];
 };
 
