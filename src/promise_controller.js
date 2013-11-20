@@ -80,6 +80,22 @@ PromiseController.prototype.finish = function finish() {
 };
 
 
+// PromiseController::validateDataSize {{{1
+PromiseController.prototype.validateDataSize = function validateDataSize() {
+  var size = this.dataSetSize();
+  if (size >= 90000) {
+    return promiseConfirmation("Gulp! I really think that is too high. Blue smoke will probubly come out the back of your computer! Are you absolutly sure?");
+  }
+  if (size >= 50000) {
+    return promiseConfirmation("Whoa Nelly! That's a lot! The browser will probubly cry. Are you really sure you want to do this?");
+  }
+  if (size >= 10000) {
+    return promiseConfirmation("That's getting a little heavy. Are you sure you want to bog your browser down?");
+  }
+  return Q("Data size ok");
+};
+
+
 // Helper functions {{{1
 // promiseConfirmation {{{2
 function promiseConfirmation(message) {
