@@ -140,7 +140,7 @@ PromiseController.prototype.buildDom = function buildDom() {
   }
 
   function worker() {
-    list_items += '<div class="list-item pending">' + count + ': Pending...</div>';
+    list_items += '<div class="list-item pending ui-corner-all">' + count + ': Pending...</div>';
     count++;
   }
 
