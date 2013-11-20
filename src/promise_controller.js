@@ -125,6 +125,64 @@ PromiseController.prototype.generateData = function generateData() {
 };
 
 
+// PromiseController::execute {{{1
+PromiseController.prototype.execute = function execute(data_set) {
+  var _this        = this;
+  var count        = 0;
+  var size         = data_set.length;
+  var final_result = true;
+  var defer        = Q.defer();
+  var promises     = [];
+  var promise;
+
+  function pass(data) {
+    defer.notify(data);
+  }
+
+  function fail(data) {
+    final_result = false;
+    defer.notify(data);
+  }
+
+  function condition() {
+    return count < size;
+  }
+
+  function worker() {
+    promise = data_set[count].start();
+    promise.then(pass, fail);
+    promises.push(promise);
+    count++;
+  }
+
+  function dataFinished(data_set) {
+    if (final_result) {
+      defer.resolve(data_set);
+    }
+    else {
+      defer.reject(data_set);
+    }
+  }
+
+  return promiseWhile(condition, worker).then(function() {
+    Q.allSettled(promises).then(dataFinished).done();
+    return defer.promise;
+  });
+};
+
+
+// PromiseController::displayResult {{{1
+PromiseController.prototype.displayResult = function displayResult(allFulfilled, data_set) {
+  this.end_time = new Date().getTime();
+  this.info_divs.live_update.hide();
+  this.info_divs.summary
+    .text("Done. " + data_set.length + " objects processed in " + this.calculateTime() + " ms.")
+    .removeClass("fulfilled").removeClass("rejected")
+    .addClass(allFulfilled ? "fulfilled" : "rejected")
+    .show();
+};
+
+
 // PromiseController::setupInfoDisplay {{{1
 PromiseController.prototype.setupInfoDisplay = function setupInfoDisplay() {
   this.info_divs.summary.hide();
