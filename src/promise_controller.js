@@ -41,6 +41,45 @@ PromiseController.prototype.dataSetSize = function dataSetSize() {
 };
 
 
+// PromiseController::enableControls {{{1
+PromiseController.prototype.enableControls = function enableControls() {
+  for (var control in this.controls) {
+    this.controls[control].prop("disabled", false);
+  }
+  return arguments[0];
+};
+
+
+// PromiseController::disableControls {{{1
+PromiseController.prototype.disableControls= function disableControls() {
+  for (var control in this.controls) {
+    this.controls[control].prop("disabled", true);
+  }
+  return arguments[0];
+};
+
+
+// PromiseController::showLoading {{{1
+PromiseController.prototype.showLoading = function showLoading() {
+  this.loading_overlay.show();
+  return arguments[0];
+};
+
+
+// PromiseController::hideLoading {{{1
+PromiseController.prototype.hideLoading = function hideLoading() {
+  this.loading_overlay.hide();
+  return arguments[0];
+};
+
+
+// PromiseController::finish {{{1
+PromiseController.prototype.finish = function finish() {
+  this.hideLoading();
+  this.enableControls();
+};
+
+
 // Helper functions {{{1
 // promiseConfirmation {{{2
 function promiseConfirmation(message) {
