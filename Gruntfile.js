@@ -11,7 +11,11 @@ module.exports = function(grunt) {
               path: 'lib/jquery/jquery.js',
               exports: '$'
             }
-          }
+          },
+          noParse: ['lib/**/*.js'],
+          alias: [
+            'lib/jquery-ui/jquery-ui.js:jquery-ui'
+          ]
         },
         files: {
           'app.js': 'src/app.js'
