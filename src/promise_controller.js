@@ -119,6 +119,12 @@ PromiseController.prototype.buildDom = function buildDom() {
 };
 
 
+// PromiseController::generateData {{{1
+PromiseController.prototype.generateData = function generateData() {
+  return DataGenerator.buildData(this.dataSetSize(), this.allowFailures());
+};
+
+
 // Helper functions {{{1
 // promiseConfirmation {{{2
 function promiseConfirmation(message) {
