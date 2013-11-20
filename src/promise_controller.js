@@ -125,6 +125,37 @@ PromiseController.prototype.generateData = function generateData() {
 };
 
 
+// PromiseController::setupInfoDisplay {{{1
+PromiseController.prototype.setupInfoDisplay = function setupInfoDisplay() {
+  this.info_divs.summary.hide();
+  this.info_divs.live_update.show();
+};
+
+
+// PromiseController::resolveDataObject {{{1
+PromiseController.prototype.resolveDataObject = function resolveDataObject(data) {
+  this.tasks_complete++;
+  this.displayCount();
+  $(this.content_list_items[data.id])
+    .removeClass("pending")
+    .addClass(data.isABadWorker ? "rejected" : "fulfilled")
+    .text(data.toString());
+};
+
+
+// PromiseController::displayCount {{{1
+PromiseController.prototype.displayCount = function displayCount() {
+  this.info_divs.count.text("" + this.tasks_complete + " (" + this.calculateTime() + " ms)");
+};
+
+
+// PromiseController::calculateTime {{{1
+PromiseController.prototype.calculateTime = function calculateTime() {
+  var current_time = this.end_time || new Date().getTime();
+  return current_time - this.start_time;
+};
+
+
 // Helper functions {{{1
 // promiseConfirmation {{{2
 function promiseConfirmation(message) {
