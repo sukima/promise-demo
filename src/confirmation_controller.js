@@ -7,9 +7,7 @@ function ConfirmationController() {
   this.defer = null;
   this.dialog_element = $("#notice");
   this.dialog_element.dialog({
-    height:    140,
     modal:     true,
-    resizable: false,
     autoOpen:  false,
     close:     $.proxy(this, "resolve"),
     buttons: {
