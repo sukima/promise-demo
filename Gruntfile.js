@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       }
     },
 
-    clean: ['app.js', 'style.css'],
+    clean: ['app.js', 'styles/index.css'],
 
     watch: {
       scripts: {
@@ -59,13 +59,13 @@ module.exports = function(grunt) {
           urlfunc: 'embedurl' // use embedurl('test.png') in our code to trigger Data URI embedding
         },
         files: {
-          'style.css': 'styles/index.styl'
+          'styles/index.css': 'styles/index.styl'
         }
       }
     },
 
     'gh-pages': {
-      src: ['images/**', 'style.css', 'styles/**/*.css', 'styles/images/*', 'app.js', 'index.html']
+      src: ['images/**', 'styles/**/*.css', 'styles/images/*', 'app.js', 'index.html']
     }
 
   });
