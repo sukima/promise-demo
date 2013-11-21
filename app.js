@@ -25806,16 +25806,24 @@ return Q;
 
 },{"__browserify_process":5}],7:[function(require,module,exports){
 var $ = require("jquery");
+var jq_alert = require("./confirmation_controller").alert;
 var PromiseController = require("./promise_controller");
+
+var version = "0.0.1";
 
 require("jquery-ui");
 
 $(function() {
   var appController = new PromiseController();
   appController.init();
+  $("#logo").click(showAbout);
 });
 
-},{"./promise_controller":10,"jquery":"0WaVMD","jquery-ui":"Fy2UMz"}],8:[function(require,module,exports){
+function showAbout() {
+  jq_alert("Promise-Demo project, version " + version, "About");
+}
+
+},{"./confirmation_controller":8,"./promise_controller":10,"jquery":"0WaVMD","jquery-ui":"Fy2UMz"}],8:[function(require,module,exports){
 // ConfirmationController - Controls a confirmation popup
 var Q = require("q");
 var singleton_instance;
@@ -25894,6 +25902,23 @@ ConfirmationController.getInstance = function getInstance() {
     singleton_instance = new ConfirmationController();
   }
   return singleton_instance;
+};
+
+// ConfirmationController.alert {{{1
+// A one-off jQuery-UI replacement for JS alert()
+ConfirmationController.alert = function alert(message, title) {
+  if (!message) {
+    // log but continue on unharmed.
+    return console.warn("ConfirmationController.alert called without a message");
+  }
+  $("<div/>").clone().html(message).dialog({
+    title: title || "Alert",
+    resizable: false,
+    modal: true,
+    buttons: {
+      "Ok": function() { $(this).dialog("close"); }
+    }
+  });
 };
 // }}}1
 
