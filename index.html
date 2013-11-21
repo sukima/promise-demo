@@ -14,7 +14,7 @@
     <img src="images/loading.gif" alt="Loading...">
   </div>
   <div id="controls">
-    <div><button id="run-btn" class="runner">Run</button></div>
+    <div><button id="run-btn">Run</button></div>
     <div>
       <label for="data-size">Data Size</label><br>
       <input id="data-size" type="number" value="1000">
@@ -23,9 +23,50 @@
       <input id="allow-failures" type="checkbox" checked="checked">
       <label for="allow-failures">Allow Failures</label>
     </div>
-    <div id="run-info" style="display:none" class="pending">Processed <span id="count">0</span> data objects.</div>
-    <div id="info" style="display:none"></div>
+    <div id="run-info" style="display:none" class="pending ui-corner-all">Processed <span id="count">0</span> data objects.</div>
+    <div id="info" style="display:none" class="ui-corner-all"></div>
   </div>
   <div id="list"></div>
+  <div id="intro">
+    <div class="centered-box ui-corner-all box-shadow">
+      <img id="logo" src="images/logo.svg" width="100" height="100" alt="Promises A+ / Then logo">
+      <h1>Promises Demo</h1>
+      <p>We will illustrate the asynchronous nature of JavaScript and how we managed it using Promises.</p>
+      <h4>Data Generation</h4>
+      <p>This demo generates <em>data</em> which are meant to simulate network latency. They are timed events that will resolve or reject based on a random <code>setTimeout</code>.</p>
+      <p>The random timeout is anywhere between <strong>500 ms</strong> to <strong>10 seconds</strong>. Which means if we were to <em>synchronously</em> wait for 1000 workers then it could take up to <strong>10,000 seconds!</strong> Using an <em>asynchronous</em> pattern the same data set can complete in just over <strong>10 seconds!</strong></p>
+      <p>This demo demonstrates this processing by displaying the resolved workers as they complete. Each worker has a random <em>title</em> and a unique ID. When it's random timer completes the data is displayed in the box associated with it's ID.</p>
+      <p>We construct boxes for each worker but leave it <em>blank</em> so you will see a grid of boxes and they will display a title and change color depending on the resolution of the worker. Either <span class="fulfilled">GREEN</span> for resolved or in some random cases <span class="rejected">RED</span> for rejected workers.</p>
+      <h4>Intro to promises</h4>
+<pre class='vimCodeElement'>
+<span id="L1" class="LineNr"> 1 </span><span class="Identifier">function</span> normalFunction() <span class="Identifier">{</span>
+<span id="L2" class="LineNr"> 2 </span>  <span class="Statement">if</span> (condition) <span class="Identifier">{</span>
+<span id="L3" class="LineNr"> 3 </span>    <span class="Comment">// this will mutate a wrapped promise by fulfilling it</span>
+<span id="L4" class="LineNr"> 4 </span>    <span class="Statement">return</span> <span class="Constant">&quot;value&quot;</span>;
+<span id="L5" class="LineNr"> 5 </span>  <span class="Identifier">}</span>
+<span id="L6" class="LineNr"> 6 </span>  <span class="Statement">else</span> <span class="Identifier">{</span>
+<span id="L7" class="LineNr"> 7 </span>    <span class="Comment">// this will mutate a wrapped promise by rejecting it</span>
+<span id="L8" class="LineNr"> 8 </span>    <span class="Statement">throw</span> <span class="Constant">&quot;reason&quot;</span>;
+<span id="L9" class="LineNr"> 9 </span>  <span class="Identifier">}</span>
+<span id="L10" class="LineNr">10 </span><span class="Identifier">}</span>
+<span id="L11" class="LineNr">11 </span>
+<span id="L12" class="LineNr">12 </span><span class="Identifier">function</span> callback(value) <span class="Identifier">{</span>
+<span id="L13" class="LineNr">13 </span>  console.log(value);
+<span id="L14" class="LineNr">14 </span><span class="Identifier">}</span>
+<span id="L15" class="LineNr">15 </span>
+<span id="L16" class="LineNr">16 </span><span class="Identifier">function</span> failed(reason) <span class="Identifier">{</span>
+<span id="L17" class="LineNr">17 </span>  console.log(reason);
+<span id="L18" class="LineNr">18 </span><span class="Identifier">}</span>
+<span id="L19" class="LineNr">19 </span>
+<span id="L20" class="LineNr">20 </span><span class="Identifier">var</span> promise = Q.fcall(normalFunction);
+<span id="L21" class="LineNr">21 </span>
+<span id="L22" class="LineNr">22 </span>promise.then(callback); <span class="Comment">// =&gt; &quot;value&quot;</span>
+<span id="L23" class="LineNr">23 </span>promise.fail(failed);   <span class="Comment">// =&gt; &quot;reason&quot;</span>
+<span id="L24" class="LineNr">24 </span>promise.then(callback, failed);
+</pre>
+      <h4>Testing promises</h4>
+    </div>
+  </div>
+  <div id="notice" title="Warning!"></div>
 </body>
 </html>
