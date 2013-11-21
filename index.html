@@ -31,6 +31,14 @@
     <div class="centered-box ui-corner-all box-shadow">
       <img id="logo" src="images/logo.svg" width="100" height="100" alt="Promises A+ / Then logo">
       <h1>Promises Demo</h1>
+      <p>We will illustrate the asynchronous nature of JavaScript and how we managed it using Promises.</p>
+      <h4>Data Generation</h4>
+      <p>This demo generates <em>data</em> which are meant to simulate network latency. They are timed events that will resolve or reject based on a random <code>setTimeout</code>.</p>
+      <p>The random timeout is anywhere between <strong>500 ms</strong> to <strong>10 seconds</strong>. Which means if we were to <em>synchronously</em> wait for 1000 workers then it could take up to <strong>10,000 seconds!</strong> Using an <em>asynchronous</em> pattern the same data set can complete in just over <strong>10 seconds!</strong></p>
+      <p>This demo demonstrates this processing by displaying the resolved workers as they complete. Each worker has a random <em>title</em> and a unique ID. When it's random timer completes the data is displayed in the box associated with it's ID.</p>
+      <p>We construct boxes for each worker but leave it <em>blank</em> so you will see a grid of boxes and they will display a title and change color depending on the resolution of the worker. Either <span class="fulfilled">GREEN</span> for resolved or in some random cases <span class="rejected">RED</span> for rejected workers.</p>
+      <h4>Intro to promises</h4>
+      <h4>Testing promises</h4>
     </div>
   </div>
   <div id="notice" title="Warning!"></div>
