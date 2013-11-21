@@ -15,7 +15,8 @@ function PromiseController() {
   this.info_divs = {
     live_update: $("#run-info"),
     count:       $("#count"),
-    summary:     $("#info")
+    summary:     $("#info"),
+    intro:       $("#intro")
   };
   this.loading_overlay = $("#loading");
   this.content_list = $("#list");
@@ -92,6 +93,7 @@ PromiseController.prototype.disableControls= function disableControls() {
 
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
+  this.info_divs.intro.hide();
   this.loading_overlay.show();
   return arguments[0];
 };
