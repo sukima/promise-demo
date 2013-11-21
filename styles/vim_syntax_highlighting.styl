@@ -1,0 +1,45 @@
+codeBackgroundColor = #fdf6e3
+codeTextColor       = #657b83
+
+codeBorderRadius()
+  border        thin solid black
+  border-radius 3px
+
+code
+  padding 0 4px
+  color   black
+
+pre
+  color codeTextColor
+
+code, pre
+  codeBorderRadius()
+  background-color codeBackgroundColor
+  font-family      monospace
+
+pre#vimCodeElement
+  color            codeTextColor
+  font-size        1em
+  padding          0
+  overflow-y       auto
+
+  .Type
+    color #b58900
+
+  .Identifier
+    color #268bd2
+
+  .LineNr
+    color            #93a1a1
+    background-color #eee8d5
+    padding-bottom   1px
+
+  .Statement
+    color #719e07
+
+  .Comment
+    color      #93a1a1
+    font-style italic
+
+  .Constant
+    color #2aa198
