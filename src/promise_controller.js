@@ -226,6 +226,7 @@ PromiseController.prototype.resolveDataObject = function resolveDataObject(data)
   $(this.content_list_items[data.id])
     .removeClass("pending")
     .addClass(data.isABadWorker ? "rejected" : "fulfilled")
+    .addClass("box-shadow")
     .text(data.toString());
 };
 
