@@ -77,6 +77,23 @@ ConfirmationController.getInstance = function getInstance() {
   }
   return singleton_instance;
 };
+
+// ConfirmationController.alert {{{1
+// A one-off jQuery-UI replacement for JS alert()
+ConfirmationController.alert = function alert(message, title) {
+  if (!message) {
+    // log but continue on unharmed.
+    return console.warn("ConfirmationController.alert called without a message");
+  }
+  $("<div/>").clone().html(message).dialog({
+    title: title || "Alert",
+    resizable: false,
+    modal: true,
+    buttons: {
+      "Ok": function() { $(this).dialog("close"); }
+    }
+  });
+};
 // }}}1
 
 module.exports = ConfirmationController;
