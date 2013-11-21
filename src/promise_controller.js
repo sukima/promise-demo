@@ -116,7 +116,7 @@ PromiseController.prototype.validateDataSize = function validateDataSize() {
   var confirmation = ConfirmationController.getInstance();
   var message;
   if (size >= 90000) {
-    message = "Gulp! I really think that is too high. Blue smoke will probubly come out the back of your computer! Are you absolutly sure?";
+    message = "Gulp! I really think that is too high. Blue smoke will probubly come out the back of your computer! <strong>Are you absolutly sure?</strong>";
   }
   else if (size >= 50000) {
     message = "Whoa Nelly! That's a lot! The browser will probubly cry. Are you really sure you want to do this?";

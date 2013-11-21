@@ -50,7 +50,7 @@ ConfirmationController.prototype.resolve = function resolve() {
 ConfirmationController.prototype.open = function open(message) {
   this.confirmation = false;
   this.defer = this.defer || Q.defer();
-  this.dialog_element.text(message || "");
+  this.dialog_element.html(message || "");
   this.dialog_element.dialog("open");
   return this;
 };
