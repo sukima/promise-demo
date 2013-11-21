@@ -1,10 +1,9 @@
 var $ = require("jquery");
 var jq_alert = require("./confirmation_controller").alert;
 var PromiseController = require("./promise_controller");
+require("jquery-ui");
 
 var version = "0.0.1";
-
-require("jquery-ui");
 
 $(function() {
   var appController = new PromiseController();
