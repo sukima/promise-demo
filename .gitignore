@@ -1,5 +1,6 @@
 .DS_Store
 app.js
+spec/specs.js
 styles/index.css
 node_modules/
 .grunt/

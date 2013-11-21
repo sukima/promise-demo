@@ -4,35 +4,40 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     browserify: {
-      dist: {
-        options: {
-          shim: {
-            jquery: {
-              path: 'lib/jquery/jquery.js',
-              exports: '$'
-            }
-          },
-          noParse: ['lib/**/*.js'],
-          alias: [
-            'lib/jquery-ui/jquery-ui.js:jquery-ui'
-          ]
+      options: {
+        shim: {
+          jquery: {
+            path: 'lib/jquery/jquery.js',
+            exports: '$'
+          }
         },
+        noParse: ['lib/**/*.js'],
+        alias: [
+          'lib/jquery-ui/jquery-ui.js:jquery-ui'
+        ]
+      },
+      dist: {
         files: {
           'app.js': 'src/app.js'
+        }
+      },
+      spec: {
+        files: {
+          'spec/specs.js': ['spec/src/**/*helper.js', 'spec/src/**/*spec.js']
         }
       }
     },
 
-    clean: ['app.js', 'styles/index.css'],
+    clean: ['app.js', 'spec/specs.js', 'styles/index.css'],
 
     watch: {
       scripts: {
-        files: ['src/**/*.js'],
+        files: ['src/**/*.js', 'spec/src/**/*.js'],
         tasks: ['browserify'],
         options: { livereload: true }
       },
       html: {
-        files: ['index.html', 'styles/**/*.css'],
+        files: ['index.html', 'styles/**/*.css', 'spec/index.html', 'spec/lib/*', 'spec/fixtures/*'],
         options: { livereload: true }
       },
       style: {
@@ -65,7 +70,17 @@ module.exports = function(grunt) {
     },
 
     'gh-pages': {
-      src: ['images/**', 'styles/**/*.css', 'styles/images/*', 'app.js', 'index.html']
+      src: [
+        'images/**',
+        'styles/**/*.css',
+        'styles/images/*',
+        'app.js',
+        'index.html',
+        'spec/lib/**',
+        'spec/index.html',
+        'spec/specs.js',
+        'spec/fixtures/**'
+      ]
     }
 
   });
