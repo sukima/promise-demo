@@ -50,6 +50,7 @@ PromiseController.prototype.start = function start() {
     _this.tasks_complete = 0;
     _this.start_time = new Date().getTime();
     _this.end_time = null;
+    _this.setupInfoDisplay();
 
     var waitForDOM  = waitForValidation.delay(1).then($.proxy(_this, "buildDom"));
     waitForDOM.then(function(items) {
@@ -59,7 +60,6 @@ PromiseController.prototype.start = function start() {
     var waitForData = waitForValidation.delay(1).then($.proxy(_this, "generateData"));
 
     var waitForSetup = Q.all([waitForDOM, waitForData]);
-    waitForSetup.then($.proxy(_this, "setupInfoDisplay"));
     waitForSetup.then($.proxy(_this, "hideLoading"));
 
     var waitForExecution = waitForSetup
@@ -216,6 +216,7 @@ PromiseController.prototype.displayResult = function displayResult(allFulfilled,
 // PromiseController::setupInfoDisplay {{{1
 PromiseController.prototype.setupInfoDisplay = function setupInfoDisplay() {
   this.info_divs.summary.hide();
+  this.displayCount();
   this.info_divs.live_update.show();
 };
 
