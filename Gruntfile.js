@@ -45,8 +45,7 @@ module.exports = function(grunt) {
           ],
           external: [
             './lib/jquery/jquery.js',
-            './lib/jquery-ui/jquery-ui.js',
-            './app.js'
+            './lib/jquery-ui/jquery-ui.js'
           ]
         },
         src: ['spec/src/**/**helper.js', 'spec/src/**/*spec.js'],
@@ -59,7 +58,7 @@ module.exports = function(grunt) {
     watch: {
       options: { livereload: true },
       libs: {
-        files: ['lib/**'],
+        files: ['lib/**/*'],
         tasks: ['browserify:libs']
       },
       scripts: {
