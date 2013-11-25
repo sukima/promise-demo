@@ -1,2 +1,2 @@
 exports.$ = require("jquery");
-require("jquery-ui");
+require("jquery_ui");

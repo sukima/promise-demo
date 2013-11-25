@@ -1,4 +1,5 @@
 .DS_Store
+libs.js
 app.js
 spec/specs.js
 styles/index.css

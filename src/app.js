@@ -1,16 +1,16 @@
 var $ = require("jquery");
 var jq_alert = require("./confirmation_controller").alert;
 var PromiseController = require("./promise_controller");
-require("jquery-ui");
+require("jquery_ui");
 
-var version = "0.0.1";
+exports.version = "0.0.1";
 
-$(function() {
+exports.showAbout = function showAbout() {
+  jq_alert("Promise-Demo project, version " + exports.version, "About");
+};
+
+exports.init = function init() {
   var appController = new PromiseController();
   appController.init();
-  $("#logo").click(showAbout);
-});
-
-function showAbout() {
-  jq_alert("Promise-Demo project, version " + version, "About");
-}
+  $("#logo").click(exports.showAbout);
+};

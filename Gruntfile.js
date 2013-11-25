@@ -4,46 +4,78 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     browserify: {
-      options: {
-        shim: {
-          jquery: {
-            path: 'lib/jquery/jquery.js',
-            exports: '$'
+      libs: {
+        options: {
+          shim: {
+            jquery: {
+              path: './lib/jquery/jquery.js',
+              exports: 'jQuery'
+            },
+            jquery_ui: {
+              path: './lib/jquery-ui/jquery-ui.js',
+              exports: null,
+              depends: {
+                jquery: 'jQuery'
+              }
+            }
           }
         },
-        noParse: ['lib/**/*.js'],
-        alias: [
-          'lib/jquery-ui/jquery-ui.js:jquery-ui'
-        ]
+        src: ['./lib/**/*.js'],
+        dest: 'libs.js'
       },
-      dist: {
-        files: {
-          'app.js': 'src/app.js'
-        }
+      app: {
+        options: {
+          alias: [
+            './lib/jquery/jquery.js:jquery',
+            './lib/jquery-ui/jquery-ui.js:jquery_ui'
+          ],
+          external: [
+            './lib/jquery/jquery.js',
+            './lib/jquery-ui/jquery-ui.js'
+          ]
+        },
+        src: ['src/bootstrap.js'],
+        dest: 'app.js'
       },
-      spec: {
-        files: {
-          'spec/specs.js': ['spec/src/**/*helper.js', 'spec/src/**/*spec.js']
-        }
+      specs: {
+        options: {
+          alias: [
+            './lib/jquery/jquery.js:jquery',
+            './lib/jquery-ui/jquery-ui.js:jquery_ui'
+          ],
+          external: [
+            './lib/jquery/jquery.js',
+            './lib/jquery-ui/jquery-ui.js',
+            './app.js'
+          ]
+        },
+        src: ['spec/src/**/**helper.js', 'spec/src/**/*spec.js'],
+        dest: 'spec/specs.js'
       }
     },
 
-    clean: ['app.js', 'spec/specs.js', 'styles/index.css'],
+    clean: ['libs.js', 'app.js', 'spec/specs.js', 'styles/index.css'],
 
     watch: {
+      options: { livereload: true },
+      libs: {
+        files: ['lib/**'],
+        tasks: ['browserify:libs']
+      },
       scripts: {
-        files: ['src/**/*.js', 'spec/src/**/*.js'],
-        tasks: ['browserify'],
-        options: { livereload: true }
+        files: ['src/**/*.js'],
+        tasks: ['browserify:app']
+      },
+      specs: {
+        files: ['spec/src/**/*.js'],
+        tasks: ['browserify:specs']
       },
       html: {
-        files: ['index.html', 'styles/**/*.css', 'spec/index.html', 'spec/lib/*', 'spec/fixtures/*'],
-        options: { livereload: true }
+        files: ['index.html', 'styles/**/*.css', 'spec/index.html', 'spec/lib/*', 'spec/fixtures/*']
       },
       style: {
         files: ['styles/**/*.styl'],
-        tasks: ['stylus'],
-        options: { livereload: true }
+        tasks: ['stylus']
       }
     },
 
@@ -74,6 +106,7 @@ module.exports = function(grunt) {
         'images/**',
         'styles/**/*.css',
         'styles/images/*',
+        'libs.js',
         'app.js',
         'index.html',
         'spec/lib/**',
