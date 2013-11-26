@@ -20,7 +20,7 @@ describe("promiseWhile()", function() {
       return promiseWhile(this.conditionSpy, this.workerSpy)
         .then(function() {
           expect( _this.workerSpy ).toHaveBeenCalled();
-        }, jasmine.expecteFulfilled);
+        }, jasmine.expectFulfilled);
     });
   });
 
@@ -30,7 +30,7 @@ describe("promiseWhile()", function() {
       return promiseWhile(this.conditionSpy, this.workerSpy)
         .then(function() {
           expect( true ).toBeTruthy();
-        }, jasmine.expecteFulfilled);
+        }, jasmine.expectFulfilled);
     });
   });
 
@@ -39,7 +39,7 @@ describe("promiseWhile()", function() {
     this.workerSpy.andThrow("rejection");
     runs(function() {
       return promiseWhile(this.conditionSpy, this.workerSpy)
-        .then(jasmine.expecteRejected, function(reason) {
+        .then(jasmine.expectRejected, function(reason) {
           expect( reason ).toBe("rejection");
         });
     });

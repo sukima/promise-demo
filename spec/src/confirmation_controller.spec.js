@@ -85,7 +85,7 @@ describe("ConfirmationController", function() {
         this.closeCallback();
         return this.cc.promise().then(
           function() { expect( true ).toBeTruthy(); },
-          jasmine.expectedFulfilled
+          jasmine.expectFulfilled
         );
       });
     });
@@ -95,7 +95,7 @@ describe("ConfirmationController", function() {
       runs(function() {
         this.closeCallback();
         return this.cc.promise().then(
-          jasmine.expectedRejected,
+          jasmine.expectRejected,
           function() { expect( true ).toBeTruthy(); }
         );
       });
