@@ -2128,6 +2128,7 @@ module.exports = ConfirmationController;
 Q = require("q");
 promiseWhile = require("./promise_while");
 
+// DataObject {{{1
 function DataObject(options) { /*jshint eqnull:true */
   if (options == null) {
     options = {};
@@ -2137,13 +2138,18 @@ function DataObject(options) { /*jshint eqnull:true */
   this.timeout    = options.timeout || 10;
   this.created_on = new Date().getTime();
   this.isABadWorker = options.allowFailures ? randomFail() : false;
+  if (this.id == null || this.title == null) {
+    throw new Error("Missing arguments. Required: {id: number, title: string}");
+  }
 }
 
+// DataObject::getRunningTime {{{1
 DataObject.prototype.getRunningTime = function() {
   if (!this.completed_on) { return -1; }
   return (this.completed_on - this.created_on);
 };
 
+// DataObject::start {{{1
 DataObject.prototype.start = function() {
   var _this = this;
   return Q.delay(this.timeout).then(function() {
@@ -2155,13 +2161,15 @@ DataObject.prototype.start = function() {
   });
 };
 
+// DataObject::toString {{{1
 DataObject.prototype.toString = function()  {
   var time = this.getRunningTime();
   time = time === -1 ? "" : ("" + time + " ms - ");
   return ("" + this.id + ": " + time + this.title);
 };
 
-exports.buildData = function (size, allowFailures) {
+// DataObject.buildData (static) {{{1
+DataObject.buildData = function (size, allowFailures) {
   var count = 0, storage = [];
 
   function condition() {
@@ -2186,6 +2194,8 @@ exports.buildData = function (size, allowFailures) {
   });
 };
 
+// Helper Functions {{{1
+// randomTitle {{{2
 function randomTitle() {
   var renderer = {
     noun: function() {
@@ -2202,18 +2212,23 @@ function randomTitle() {
   });
 }
 
+// randomTimeout {{{2
 function randomTimeout() {
   return randomTimeoutBetween(100, 10000);
 }
 
+// randomTimeoutBetween {{{2
 function randomTimeoutBetween(min, max) {
   return (Math.floor((Math.random() * (max - min) + min) / 10) * 10);
 }
 
+// randomFail {{{2
 function randomFail() {
   return (Math.random() > 0.95);
 }
 
+// Data Variables {{{1
+// phrases {{{2
 var phrases = [
   "{adjective} {noun}",
   "The {adjective} {noun}",
@@ -2223,6 +2238,7 @@ var phrases = [
   "{noun} in the {noun}"
 ];
 
+// nouns {{{2
 var nouns = [
   "Dream","Dreamer","Dreams","Waves",
   "Sword","Kiss","Sex","Lover",
@@ -2278,6 +2294,7 @@ var nouns = [
   "Truth","Edge"
 ];
 
+// adjectives {{{2
 var adjectives = [
   "Lost","Only","Last","First",
   "Third","Sacred","Bold","Lovely",
@@ -2312,6 +2329,11 @@ var adjectives = [
   "Rough","Frozen","Wild","Trembling","Fallen",
   "Ragged","Broken","Cracked","Splintered"
 ];
+// }}}1
+
+module.exports = DataObject;
+
+/* vim:set sw=2 ts=2 et fdm=marker: */
 
 },{"./promise_while":10,"q":5}],9:[function(require,module,exports){
 // PromiseController - Control the building and displaying of data objects
@@ -2363,20 +2385,20 @@ PromiseController.prototype.start = function start() {
   var _this = this;
   this.disableControls();
 
-  var waitForValidation = this.validateDataSize();
-  waitForValidation.then($.proxy(this, "showLoading"));
+  var waitForValidation = this.validateDataSize()
+    .then($.proxy(this, "showLoading"));
   return waitForValidation.then(function() {
     _this.tasks_complete = 0;
     _this.start_time = new Date().getTime();
     _this.end_time = null;
     _this.setupInfoDisplay();
 
-    var waitForDOM  = waitForValidation.delay(1).then($.proxy(_this, "buildDom"));
-    waitForDOM.then(function(items) {
-      _this.content_list_items = items;
-    });
+    var waitForDOM  = _this.buildDom()
+      .then(function(items) {
+        _this.content_list_items = items;
+      });
 
-    var waitForData = waitForValidation.delay(1).then($.proxy(_this, "generateData"));
+    var waitForData = _this.generateData();
 
     var waitForSetup = Q.all([waitForDOM, waitForData]);
     waitForSetup.then($.proxy(_this, "hideLoading"));
@@ -2414,9 +2436,15 @@ PromiseController.prototype.disableControls= function disableControls() {
 
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
-  this.info_divs.intro.hide();
-  this.loading_overlay.show();
-  return arguments[0];
+  var waitForHide = Q.defer(), _this = this;
+  this.info_divs.intro.hide("fade", 1000, waitForHide.resolve);
+  return waitForHide.promise.then(function() {
+    var waitForShow = Q.defer();
+    _this.loading_overlay.show("fade", 100, waitForShow.resolve);
+    // Add an artificial delay so the user can see the loading screen. Some
+    // browsers might run faster then the user interface can catch up.
+    return waitForShow.promise.delay(500);
+  });
 };
 
 // PromiseController::hideLoading {{{1
@@ -2565,11 +2593,14 @@ PromiseController.prototype.calculateTime = function calculateTime() {
 
 // PromiseController::reset {{{1
 PromiseController.prototype.reset = function reset() {
+  var _this = this;
   this.controls.reset_btn.hide();
   this.info_divs.live_update.hide();
   this.info_divs.summary.hide();
   this.content_list.empty();
-  this.info_divs.intro.show();
+  Q.delay(1).then(function() {
+    _this.info_divs.intro.show("blind", 1000);
+  });
 };
 // }}}1
 

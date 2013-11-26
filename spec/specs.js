@@ -2024,6 +2024,17 @@ describe("ConfirmationController", function() {
       expect( result.then ).toBeDefined();
     });
 
+    it("should reject the promise if dialog is closed", function() {
+      runs(function() {
+        return this.cc.promise().then(
+          jasmine.expectRejected,
+          function(reason) {
+            expect( true ).toBeTruthy();
+          }
+        );
+      });
+    });
+
   });
 
   describe("#open", function() {
@@ -2076,16 +2087,16 @@ describe("ConfirmationController", function() {
     beforeEach(function() {
       this.closeCallback = this.dialogSpy.calls[0].args[0].close;
       expect( this.closeCallback ).toBeDefined();
-      this.cc.open();
+      this.promise = this.cc.open().promise();
     });
 
     it("should resolve the promise when dialog is confirmed", function() {
       this.cc.confirmation = true;
       runs(function() {
         this.closeCallback();
-        return this.cc.promise().then(
+        return this.promise.then(
           function() { expect( true ).toBeTruthy(); },
-          jasmine.expectedFulfilled
+          jasmine.expectFulfilled
         );
       });
     });
@@ -2094,8 +2105,8 @@ describe("ConfirmationController", function() {
       this.cc.confirmation = false;
       runs(function() {
         this.closeCallback();
-        return this.cc.promise().then(
-          jasmine.expectedRejected,
+        return this.promise.then(
+          jasmine.expectRejected,
           function() { expect( true ).toBeTruthy(); }
         );
       });
@@ -2130,7 +2141,128 @@ describe("ConfirmationController", function() {
 
 });
 
-},{"../../src/confirmation_controller":10}],7:[function(require,module,exports){
+},{"../../src/confirmation_controller":11}],7:[function(require,module,exports){
+describe("DataGenerator", function() {
+	var DataGenerator = require("../../src/data_generator");
+
+	describe("DataObject", function() {
+
+		beforeEach(function() {
+			this.test_obj = new DataGenerator({id: 0, title: "foobar"});
+		});
+
+		describe("#constructor", function() {
+
+			it("should set a created_on timestamp", function() {
+				expect( this.test_obj.created_on ).toBeDefined();
+			});
+
+			it("should throw an exception if arguments are missing", function() {
+				expect(function() { new DataGenerator({}); }).toThrow();
+				expect(function() { new DataGenerator({ id: 1 }); }).toThrow();
+				expect(function() { new DataGenerator({ title: "bar" }); }).toThrow();
+			});
+
+		});
+
+		describe("#getRunningTime", function() {
+
+			it("should return -1 when object has not completed yet", function() {
+				expect( this.test_obj.getRunningTime() ).toBe(-1);
+			});
+
+			it("should return a number", function() {
+				this.test_obj.completed_on = new Date().getTime() + 1000;
+				expect( this.test_obj.getRunningTime() ).toEqual(jasmine.any(Number));
+			});
+
+		});
+
+		describe("#start", function() {
+
+			beforeEach(function() {
+				this.test_obj.timeout = 1;
+			});
+
+			it("should return a promise", function() {
+				expect( this.test_obj.start().then ).toBeDefined();
+			});
+
+			it("should assign a completed_on when resolved", function() {
+				var _this = this;
+				runs(function() {
+					return this.test_obj.start().then(
+						function() {
+							expect( _this.test_obj.completed_on ).toEqual(jasmine.any(Number));
+						},
+						jasmine.expectedFulfilled
+					);
+				});
+			});
+
+			it("should provide itself as the value to the fulfilled promise", function() {
+				var _this = this;
+				runs(function() {
+					return this.test_obj.start().then(
+						function(value) {
+							expect( value ).toBe(_this.test_obj);
+						},
+						jasmine.expectedFulfilled
+					);
+				});
+			});
+
+			it("should provide itself as the value to the rejected promise", function() {
+				this.test_obj.isABadWorker = true;
+				var _this = this;
+				runs(function() {
+					return this.test_obj.start().then(
+						jasmine.expectedRejected,
+						function(reason) {
+							expect( reason ).toBe(_this.test_obj);
+						}
+					);
+				});
+			});
+
+		});
+
+		describe("#toString", function() {
+
+			it("should return a string", function() {
+				expect( this.test_obj.toString() ).toEqual(jasmine.any(String));
+			});
+
+		});
+
+	});
+
+	describe("#buildData (static)", function() {
+
+		it("should return a promise", function() {
+			expect( DataGenerator.buildData(1).then ).toBeDefined();
+		});
+
+		it("should create an array of data objects", function() {
+			runs(function() {
+				return DataGenerator.buildData(3).then(
+					function(value) {
+						expect( value ).toEqual([
+							jasmine.any(DataGenerator),
+							jasmine.any(DataGenerator),
+							jasmine.any(DataGenerator)
+						]);
+					},
+					jasmine.expectFulfilled
+				);
+			});
+		});
+
+	});
+
+});
+
+},{"../../src/data_generator":12}],8:[function(require,module,exports){
 describe("promiseWhile()", function() {
   var promiseWhile = require("../../src/promise_while");
   var Q = require("q");
@@ -2153,7 +2285,7 @@ describe("promiseWhile()", function() {
       return promiseWhile(this.conditionSpy, this.workerSpy)
         .then(function() {
           expect( _this.workerSpy ).toHaveBeenCalled();
-        }, jasmine.expecteFulfilled);
+        }, jasmine.expectFulfilled);
     });
   });
 
@@ -2163,7 +2295,7 @@ describe("promiseWhile()", function() {
       return promiseWhile(this.conditionSpy, this.workerSpy)
         .then(function() {
           expect( true ).toBeTruthy();
-        }, jasmine.expecteFulfilled);
+        }, jasmine.expectFulfilled);
     });
   });
 
@@ -2172,7 +2304,7 @@ describe("promiseWhile()", function() {
     this.workerSpy.andThrow("rejection");
     runs(function() {
       return promiseWhile(this.conditionSpy, this.workerSpy)
-        .then(jasmine.expecteRejected, function(reason) {
+        .then(jasmine.expectRejected, function(reason) {
           expect( reason ).toBe("rejection");
         });
     });
@@ -2181,22 +2313,22 @@ describe("promiseWhile()", function() {
 });
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"../../src/promise_while":11,"q":5}],8:[function(require,module,exports){
-jasmine.expecteFulfilled = function (reason) {
+},{"../../src/promise_while":13,"q":5}],9:[function(require,module,exports){
+jasmine.expectFulfilled = function (reason) {
 	expect( "Promise to be fulfilled but it was rejected instead: " + reason ).toBeNull();
 };
 
-jasmine.expecteRejected = function (value) {
+jasmine.expectRejected = function (value) {
 	expect( "Promise to be rejected but it was fulfilled instead: " + value ).toBeNull();
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 exports.jQuery = exports.$ = require("jquery");
 require("jquery_ui");
 var Q = require("q");
 Q.longStackSupport = true;
 
-},{"jquery":"0WaVMD","jquery_ui":"Fy2UMz","q":5}],10:[function(require,module,exports){
+},{"jquery":"0WaVMD","jquery_ui":"Fy2UMz","q":5}],11:[function(require,module,exports){
 // ConfirmationController - Controls a confirmation popup
 var Q = require("q");
 var singleton_instance;
@@ -2297,7 +2429,225 @@ ConfirmationController.alert = function alert(message, title) {
 module.exports = ConfirmationController;
 /* vim:set ts=2 sw=2 et fdm=marker: */
 
-},{"q":5}],11:[function(require,module,exports){
+},{"q":5}],12:[function(require,module,exports){
+// DataGenerator - A generator for fake data
+//
+// This module uses a random timeout to delay the resolution of any promise.
+// When you create a DataObject it will store the created_on and wait till
+// start() is called. Once that happens it will kick off the timeout and return
+// a promise who's value with be the DataObject instance.
+//
+Q = require("q");
+promiseWhile = require("./promise_while");
+
+// DataObject {{{1
+function DataObject(options) { /*jshint eqnull:true */
+  if (options == null) {
+    options = {};
+  }
+  this.id         = options.id;
+  this.title      = options.title;
+  this.timeout    = options.timeout || 10;
+  this.created_on = new Date().getTime();
+  this.isABadWorker = options.allowFailures ? randomFail() : false;
+  if (this.id == null || this.title == null) {
+    throw new Error("Missing arguments. Required: {id: number, title: string}");
+  }
+}
+
+// DataObject::getRunningTime {{{1
+DataObject.prototype.getRunningTime = function() {
+  if (!this.completed_on) { return -1; }
+  return (this.completed_on - this.created_on);
+};
+
+// DataObject::start {{{1
+DataObject.prototype.start = function() {
+  var _this = this;
+  return Q.delay(this.timeout).then(function() {
+    _this.completed_on = new Date().getTime();
+    if (_this.isABadWorker) {
+      throw _this;
+    }
+    return _this;
+  });
+};
+
+// DataObject::toString {{{1
+DataObject.prototype.toString = function()  {
+  var time = this.getRunningTime();
+  time = time === -1 ? "" : ("" + time + " ms - ");
+  return ("" + this.id + ": " + time + this.title);
+};
+
+// DataObject.buildData (static) {{{1
+DataObject.buildData = function (size, allowFailures) {
+  var count = 0, storage = [];
+
+  function condition() {
+    return count < size;
+  }
+
+  function worker() {
+    var dataObject;
+    dataObject = new DataObject({
+      id:            count,
+      timeout:       randomTimeout(),
+      title:         randomTitle(),
+      allowFailures: allowFailures
+    });
+    count++;
+    storage.push(dataObject);
+  }
+
+  return promiseWhile(condition, worker).then(function() {
+    console.log("Created " + size + " data objects.");
+    return storage;
+  });
+};
+
+// Helper Functions {{{1
+// randomTitle {{{2
+function randomTitle() {
+  var renderer = {
+    noun: function() {
+      return nouns[Math.floor(Math.random() * nouns.length)];
+    },
+    adjective: function() {
+      return adjectives[Math.floor(Math.random() * adjectives.length)];
+    }
+  };
+
+  var phrase = phrases[Math.floor(Math.random() * phrases.length)];
+  return phrase.replace(/{(\w+)}/g, function(match, p1) {
+    return renderer[p1]();
+  });
+}
+
+// randomTimeout {{{2
+function randomTimeout() {
+  return randomTimeoutBetween(100, 10000);
+}
+
+// randomTimeoutBetween {{{2
+function randomTimeoutBetween(min, max) {
+  return (Math.floor((Math.random() * (max - min) + min) / 10) * 10);
+}
+
+// randomFail {{{2
+function randomFail() {
+  return (Math.random() > 0.95);
+}
+
+// Data Variables {{{1
+// phrases {{{2
+var phrases = [
+  "{adjective} {noun}",
+  "The {adjective} {noun}",
+  "{noun} of {noun}",
+  "The {noun}'s {noun}",
+  "The {noun} of the {noun}",
+  "{noun} in the {noun}"
+];
+
+// nouns {{{2
+var nouns = [
+  "Dream","Dreamer","Dreams","Waves",
+  "Sword","Kiss","Sex","Lover",
+  "Slave","Slaves","Pleasure","Servant",
+  "Servants","Snake","Soul","Touch",
+  "Men","Women","Gift","Scent",
+  "Ice","Snow","Night","Silk","Secret","Secrets",
+  "Game","Fire","Flame","Flames",
+  "Husband","Wife","Man","Woman","Boy","Girl",
+  "Truth","Edge","Boyfriend","Girlfriend",
+  "Body","Captive","Male","Wave","Predator",
+  "Female","Healer","Trainer","Teacher",
+  "Hunter","Obsession","Hustler","Consort",
+  "Dream", "Dreamer", "Dreams","Rainbow",
+  "Dreaming","Flight","Flying","Soaring",
+  "Wings","Mist","Sky","Wind",
+  "Winter","Misty","River","Door",
+  "Gate","Cloud","Fairy","Dragon",
+  "End","Blade","Beginning","Tale",
+  "Tales","Emperor","Prince","Princess",
+  "Willow","Birch","Petals","Destiny",
+  "Theft","Thief","Legend","Prophecy",
+  "Spark","Sparks","Stream","Streams","Waves",
+  "Sword","Darkness","Swords","Silence","Kiss",
+  "Butterfly","Shadow","Ring","Rings","Emerald",
+  "Storm","Storms","Mists","World","Worlds",
+  "Alien","Lord","Lords","Ship","Ships","Star",
+  "Stars","Force","Visions","Vision","Magic",
+  "Wizards","Wizard","Heart","Heat","Twins",
+  "Twilight","Moon","Moons","Planet","Shores",
+  "Pirates","Courage","Time","Academy",
+  "School","Rose","Roses","Stone","Stones",
+  "Sorcerer","Shard","Shards","Slave","Slaves",
+  "Servant","Servants","Serpent","Serpents",
+  "Snake","Soul","Souls","Savior","Spirit",
+  "Spirits","Voyage","Voyages","Voyager","Voyagers",
+  "Return","Legacy","Birth","Healer","Healing",
+  "Year","Years","Death","Dying","Luck","Elves",
+  "Tears","Touch","Son","Sons","Child","Children",
+  "Illusion","Sliver","Destruction","Crying","Weeping",
+  "Gift","Word","Words","Thought","Thoughts","Scent",
+  "Ice","Snow","Night","Silk","Guardian","Angel",
+  "Angels","Secret","Secrets","Search","Eye","Eyes",
+  "Danger","Game","Fire","Flame","Flames","Bride",
+  "Husband","Wife","Time","Flower","Flowers",
+  "Light","Lights","Door","Doors","Window","Windows",
+  "Bridge","Bridges","Ashes","Memory","Thorn",
+  "Thorns","Name","Names","Future","Past",
+  "History","Something","Nothing","Someone",
+  "Nobody","Person","Man","Woman","Boy","Girl",
+  "Way","Mage","Witch","Witches","Lover",
+  "Tower","Valley","Abyss","Hunter",
+  "Truth","Edge"
+];
+
+// adjectives {{{2
+var adjectives = [
+  "Lost","Only","Last","First",
+  "Third","Sacred","Bold","Lovely",
+  "Final","Missing","Shadowy","Seventh",
+  "Dwindling","Missing","Absent",
+  "Vacant","Cold","Hot","Burning","Forgotten",
+  "Weeping","Dying","Lonely","Silent",
+  "Laughing","Whispering","Forgotten","Smooth",
+  "Silken","Rough","Frozen","Wild",
+  "Trembling","Fallen","Ragged","Broken",
+  "Cracked","Splintered","Slithering","Silky",
+  "Wet","Magnificent","Luscious","Swollen",
+  "Erect","Bare","Naked","Stripped",
+  "Captured","Stolen","Sucking","Licking",
+  "Growing","Kissing","Green","Red","Blue",
+  "Azure","Rising","Falling","Elemental",
+  "Bound","Prized","Obsessed","Unwilling",
+  "Hard","Eager","Ravaged","Sleeping",
+  "Wanton","Professional","Willing","Devoted",
+  "Misty","Lost","Only","Last","First",
+  "Final","Missing","Shadowy","Seventh",
+  "Dark","Darkest","Silver","Silvery","Living",
+  "Black","White","Hidden","Entwined","Invisible",
+  "Next","Seventh","Red","Green","Blue",
+  "Purple","Grey","Bloody","Emerald","Diamond",
+  "Frozen","Sharp","Delicious","Dangerous",
+  "Deep","Twinkling","Dwindling","Missing","Absent",
+  "Vacant","Cold","Hot","Burning","Forgotten",
+  "Some","No","All","Every","Each","Which","What",
+  "Playful","Silent","Weeping","Dying","Lonely","Silent",
+  "Laughing","Whispering","Forgotten","Smooth","Silken",
+  "Rough","Frozen","Wild","Trembling","Fallen",
+  "Ragged","Broken","Cracked","Splintered"
+];
+// }}}1
+
+module.exports = DataObject;
+
+/* vim:set sw=2 ts=2 et fdm=marker: */
+
+},{"./promise_while":13,"q":5}],13:[function(require,module,exports){
 // PromiseWhile - an extention to do for loops in a non-blocking way
 //
 // Taken from http://stackoverflow.com/a/17238793/227176
@@ -2331,5 +2681,5 @@ function promiseWhile(condition, body) {
 
 module.exports = promiseWhile;
 
-},{"q":5}]},{},[8,9,6,7])
+},{"q":5}]},{},[9,10,6,7,8])
 ;
