@@ -24,6 +24,17 @@ describe("ConfirmationController", function() {
       expect( result.then ).toBeDefined();
     });
 
+    it("should reject the promise if dialog is closed", function() {
+      runs(function() {
+        return this.cc.promise().then(
+          jasmine.expectRejected,
+          function(reason) {
+            expect( true ).toBeTruthy();
+          }
+        );
+      });
+    });
+
   });
 
   describe("#open", function() {
@@ -76,14 +87,14 @@ describe("ConfirmationController", function() {
     beforeEach(function() {
       this.closeCallback = this.dialogSpy.calls[0].args[0].close;
       expect( this.closeCallback ).toBeDefined();
-      this.cc.open();
+      this.promise = this.cc.open().promise();
     });
 
     it("should resolve the promise when dialog is confirmed", function() {
       this.cc.confirmation = true;
       runs(function() {
         this.closeCallback();
-        return this.cc.promise().then(
+        return this.promise.then(
           function() { expect( true ).toBeTruthy(); },
           jasmine.expectFulfilled
         );
@@ -94,7 +105,7 @@ describe("ConfirmationController", function() {
       this.cc.confirmation = false;
       runs(function() {
         this.closeCallback();
-        return this.cc.promise().then(
+        return this.promise.then(
           jasmine.expectRejected,
           function() { expect( true ).toBeTruthy(); }
         );
