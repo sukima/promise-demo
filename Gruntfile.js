@@ -66,7 +66,7 @@ module.exports = function(grunt) {
         tasks: ['browserify:app']
       },
       specs: {
-        files: ['spec/src/**/*.js'],
+        files: ['spec/src/**/*.js', 'src/**/*.js'],
         tasks: ['browserify:specs']
       },
       html: {
