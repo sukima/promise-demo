@@ -2324,6 +2324,7 @@ var promiseWhile           = require("./promise_while");
 // PromiseController {{{1
 function PromiseController() {
   this.controls = {
+    reset_btn:     $("#reset"),
     run_button:    $("#run-btn"),
     allow_failues: $("#allow-failures"),
     data_size:     $("#data-size")
@@ -2342,6 +2343,8 @@ function PromiseController() {
 PromiseController.prototype.init = function init() {
   this.controls.run_button.button()
     .click($.proxy(this, "start"));
+  this.controls.reset_btn.button().hide()
+    .click($.proxy(this, "reset"));
   return this;
 };
 
@@ -2393,6 +2396,7 @@ PromiseController.prototype.start = function start() {
 
 // PromiseController::enableControls {{{1
 PromiseController.prototype.enableControls = function enableControls() {
+  this.controls.reset_btn.show().button("enable");
   this.controls.run_button.button("enable");
   this.controls.data_size.prop("disabled", false);
   this.controls.allow_failues.prop("disabled", false);
@@ -2401,6 +2405,7 @@ PromiseController.prototype.enableControls = function enableControls() {
 
 // PromiseController::disableControls {{{1
 PromiseController.prototype.disableControls= function disableControls() {
+  this.controls.reset_btn.button("disable");
   this.controls.run_button.button("disable");
   this.controls.data_size.prop("disabled", true);
   this.controls.allow_failues.prop("disabled", true);
@@ -2556,6 +2561,15 @@ PromiseController.prototype.displayCount = function displayCount() {
 PromiseController.prototype.calculateTime = function calculateTime() {
   var current_time = this.end_time || new Date().getTime();
   return current_time - this.start_time;
+};
+
+// PromiseController::reset {{{1
+PromiseController.prototype.reset = function reset() {
+  this.controls.reset_btn.hide();
+  this.info_divs.live_update.hide();
+  this.info_divs.summary.hide();
+  this.content_list.empty();
+  this.info_divs.intro.show();
 };
 // }}}1
 
