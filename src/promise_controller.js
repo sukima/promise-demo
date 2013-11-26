@@ -47,20 +47,20 @@ PromiseController.prototype.start = function start() {
   var _this = this;
   this.disableControls();
 
-  var waitForValidation = this.validateDataSize();
-  waitForValidation.then($.proxy(this, "showLoading"));
+  var waitForValidation = this.validateDataSize()
+    .then($.proxy(this, "showLoading"));
   return waitForValidation.then(function() {
     _this.tasks_complete = 0;
     _this.start_time = new Date().getTime();
     _this.end_time = null;
     _this.setupInfoDisplay();
 
-    var waitForDOM  = waitForValidation.delay(1).then($.proxy(_this, "buildDom"));
-    waitForDOM.then(function(items) {
-      _this.content_list_items = items;
-    });
+    var waitForDOM  = _this.buildDom()
+      .then(function(items) {
+        _this.content_list_items = items;
+      });
 
-    var waitForData = waitForValidation.delay(1).then($.proxy(_this, "generateData"));
+    var waitForData = _this.generateData();
 
     var waitForSetup = Q.all([waitForDOM, waitForData]);
     waitForSetup.then($.proxy(_this, "hideLoading"));
@@ -98,9 +98,15 @@ PromiseController.prototype.disableControls= function disableControls() {
 
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
-  this.info_divs.intro.hide();
-  this.loading_overlay.show();
-  return arguments[0];
+  var waitForHide = Q.defer(), _this = this;
+  this.info_divs.intro.hide("fade", 1000, waitForHide.resolve);
+  return waitForHide.promise.then(function() {
+    var waitForShow = Q.defer();
+    _this.loading_overlay.show("fade", 100, waitForShow.resolve);
+    // Add an artificial delay so the user can see the loading screen. Some
+    // browsers might run faster then the user interface can catch up.
+    return waitForShow.promise.delay(500);
+  });
 };
 
 // PromiseController::hideLoading {{{1
@@ -249,11 +255,14 @@ PromiseController.prototype.calculateTime = function calculateTime() {
 
 // PromiseController::reset {{{1
 PromiseController.prototype.reset = function reset() {
+  var _this = this;
   this.controls.reset_btn.hide();
   this.info_divs.live_update.hide();
   this.info_divs.summary.hide();
   this.content_list.empty();
-  this.info_divs.intro.show();
+  Q.delay(1).then(function() {
+    _this.info_divs.intro.show("blind", 1000);
+  });
 };
 // }}}1
 
