@@ -18,6 +18,9 @@ function DataObject(options) { /*jshint eqnull:true */
   this.timeout    = options.timeout || 10;
   this.created_on = new Date().getTime();
   this.isABadWorker = options.allowFailures ? randomFail() : false;
+  if (this.id == null || this.title == null) {
+    throw new Error("Missing arguments. Required: {id: number, title: string}");
+  }
 }
 
 // DataObject::getRunningTime {{{1
@@ -45,8 +48,8 @@ DataObject.prototype.toString = function()  {
   return ("" + this.id + ": " + time + this.title);
 };
 
-// exports.buildData {{{1
-exports.buildData = function (size, allowFailures) {
+// DataObject.buildData (static) {{{1
+DataObject.buildData = function (size, allowFailures) {
   var count = 0, storage = [];
 
   function condition() {
@@ -207,5 +210,7 @@ var adjectives = [
   "Ragged","Broken","Cracked","Splintered"
 ];
 // }}}1
+
+module.exports = DataObject;
 
 /* vim:set sw=2 ts=2 et fdm=marker: */
