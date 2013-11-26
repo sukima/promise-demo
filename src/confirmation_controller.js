@@ -3,9 +3,9 @@ var Q = require("q");
 var singleton_instance;
 
 // ConfirmationController {{{1
-function ConfirmationController() {
+function ConfirmationController(element) {
   this.defer = null;
-  this.dialog_element = $("#notice");
+  this.dialog_element = $(element);
   this.dialog_element.dialog({
     modal:     true,
     autoOpen:  false,
@@ -73,7 +73,7 @@ ConfirmationController.prototype.promise = function promise() {
 ConfirmationController.getInstance = function getInstance() {
   /*jshint eqnull:true */
   if (singleton_instance == null) {
-    singleton_instance = new ConfirmationController();
+    singleton_instance = new ConfirmationController("#notice");
   }
   return singleton_instance;
 };
@@ -82,8 +82,7 @@ ConfirmationController.getInstance = function getInstance() {
 // A one-off jQuery-UI replacement for JS alert()
 ConfirmationController.alert = function alert(message, title) {
   if (!message) {
-    // log but continue on unharmed.
-    return console.warn("ConfirmationController.alert called without a message");
+    message = "ConfirmationController.alert called without a message";
   }
   $("<div/>").clone().html(message).dialog({
     title: title || "Alert",
