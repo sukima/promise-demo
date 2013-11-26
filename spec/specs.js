@@ -1998,25 +1998,205 @@ return Q;
 });
 
 },{"__browserify_process":4}],6:[function(require,module,exports){
-var $ = require("jquery");
-var jq_alert = require("./confirmation_controller").alert;
-var PromiseController = require("./promise_controller");
-require("jquery_ui");
+describe("ConfirmationController", function() {
+  var ConfirmationController = require("../../src/confirmation_controller");
 
-var version = "0.0.1";
+  beforeEach(function() {
+    this.dialogSpy = spyOn($.prototype, "dialog");
+    loadFixtures("confirmation_controller.html");
+    this.cc = new ConfirmationController("#notice");
+  });
 
-function showAbout() {
-  jq_alert("Promise-Demo project, version " + exports.version, "About");
-}
+  describe("#constructor", function() {
 
-$(function init() {
-  var appController = new PromiseController();
-  appController.init();
-  $("#logo").click(exports.showAbout);
-  $("a.button").button();
+    it("should initialize a dialog", function() {
+      expect( this.dialogSpy ).toHaveBeenCalledWith(
+        jasmine.objectContaining({ autoOpen: false })
+      );
+    });
+
+  });
+
+  describe("#promise", function() {
+
+    it("should return a promise", function() {
+      var result = this.cc.promise();
+      expect( result.then ).toBeDefined();
+    });
+
+  });
+
+  describe("#open", function() {
+
+    beforeEach(function() {
+      this.result = this.cc.open("foobar");
+    });
+
+    it("should open the dialog", function() {
+      expect( this.dialogSpy ).toHaveBeenCalledWith("open");
+    });
+
+    it("should set the dialog message", function() {
+      expect( $("#notice") ).toHaveText("foobar");
+    });
+
+    it("should be chainable", function() {
+      expect( this.result ).toBe(this.cc);
+    });
+
+  });
+
+  describe("#close", function() {
+
+    beforeEach(function() {
+      this.result = this.cc.close();
+    });
+
+    it("should close the dialog", function() {
+      expect( this.dialogSpy ).toHaveBeenCalledWith("close");
+    });
+
+    it("should be chainable", function() {
+      expect( this.result ).toBe(this.cc);
+    });
+
+  });
+
+  describe("#onButtonClick", function() {
+
+    it("should close the dialog", function() {
+      this.cc.onButtonClick();
+      expect( this.dialogSpy ).toHaveBeenCalledWith("close");
+    });
+
+  });
+
+  describe("on close callback (#resolve)", function() {
+
+    beforeEach(function() {
+      this.closeCallback = this.dialogSpy.calls[0].args[0].close;
+      expect( this.closeCallback ).toBeDefined();
+      this.cc.open();
+    });
+
+    it("should resolve the promise when dialog is confirmed", function() {
+      this.cc.confirmation = true;
+      runs(function() {
+        this.closeCallback();
+        return this.cc.promise().then(
+          function() { expect( true ).toBeTruthy(); },
+          jasmine.expectedFulfilled
+        );
+      });
+    });
+
+    it("should reject the promise when dialog is canceled", function() {
+      this.cc.confirmation = false;
+      runs(function() {
+        this.closeCallback();
+        return this.cc.promise().then(
+          jasmine.expectedRejected,
+          function() { expect( true ).toBeTruthy(); }
+        );
+      });
+    });
+
+  });
+
+  describe("#getInstance (static)", function() {
+    var instance_object = ConfirmationController.getInstance();
+
+    it("should return an instance of ConfirmationController", function() {
+      expect( instance_object ).toEqual(jasmine.any(ConfirmationController));
+    });
+
+    it("should return the same instance each time (singleton)", function() {
+      var result = ConfirmationController.getInstance();
+      expect( result ).toBe(instance_object);
+    });
+
+  });
+
+  describe("#alert (static)", function() {
+
+    it("should open a modal dialog", function() {
+      ConfirmationController.alert("foobar");
+      expect( this.dialogSpy ).toHaveBeenCalledWith(
+        jasmine.objectContaining({ modal: true })
+      );
+    });
+
+  });
+
 });
 
-},{"./confirmation_controller":7,"./promise_controller":9,"jquery":"0WaVMD","jquery_ui":"Fy2UMz"}],7:[function(require,module,exports){
+},{"../../src/confirmation_controller":10}],7:[function(require,module,exports){
+describe("promiseWhile()", function() {
+  var promiseWhile = require("../../src/promise_while");
+  var Q = require("q");
+  Q.longStackSupport = true;
+
+  beforeEach(function() {
+    this.workerSpy = jasmine.createSpy("worker");
+    this.conditionSpy = jasmine.createSpy("condition");
+  });
+
+  it("should execute work when condition is false", function() {
+    var condition_response = true;
+    this.conditionSpy.andCallFake(function condition() {
+      var response = condition_response;
+      condition_response = false;
+      return response;
+    });
+    runs(function() {
+      var _this = this;
+      return promiseWhile(this.conditionSpy, this.workerSpy)
+        .then(function() {
+          expect( _this.workerSpy ).toHaveBeenCalled();
+        }, jasmine.expecteFulfilled);
+    });
+  });
+
+  it("should resolve promise when condition becomes false", function() {
+    this.conditionSpy.andReturn(false);
+    runs(function() {
+      return promiseWhile(this.conditionSpy, this.workerSpy)
+        .then(function() {
+          expect( true ).toBeTruthy();
+        }, jasmine.expecteFulfilled);
+    });
+  });
+
+  it("should reject promise when worker throws an exception", function() {
+    this.conditionSpy.andReturn(true);
+    this.workerSpy.andThrow("rejection");
+    runs(function() {
+      return promiseWhile(this.conditionSpy, this.workerSpy)
+        .then(jasmine.expecteRejected, function(reason) {
+          expect( reason ).toBe("rejection");
+        });
+    });
+  });
+
+});
+/* vim:set sw=2 ts=2 et fdm=marker: */
+
+},{"../../src/promise_while":11,"q":5}],8:[function(require,module,exports){
+jasmine.expecteFulfilled = function (reason) {
+	expect( "Promise to be fulfilled but it was rejected instead: " + reason ).toBeNull();
+};
+
+jasmine.expecteRejected = function (value) {
+	expect( "Promise to be rejected but it was fulfilled instead: " + value ).toBeNull();
+};
+
+},{}],9:[function(require,module,exports){
+exports.jQuery = exports.$ = require("jquery");
+require("jquery_ui");
+var Q = require("q");
+Q.longStackSupport = true;
+
+},{"jquery":"0WaVMD","jquery_ui":"Fy2UMz","q":5}],10:[function(require,module,exports){
 // ConfirmationController - Controls a confirmation popup
 var Q = require("q");
 var singleton_instance;
@@ -2117,452 +2297,7 @@ ConfirmationController.alert = function alert(message, title) {
 module.exports = ConfirmationController;
 /* vim:set ts=2 sw=2 et fdm=marker: */
 
-},{"q":5}],8:[function(require,module,exports){
-// DataGenerator - A generator for fake data
-//
-// This module uses a random timeout to delay the resolution of any promise.
-// When you create a DataObject it will store the created_on and wait till
-// start() is called. Once that happens it will kick off the timeout and return
-// a promise who's value with be the DataObject instance.
-//
-Q = require("q");
-promiseWhile = require("./promise_while");
-
-function DataObject(options) { /*jshint eqnull:true */
-  if (options == null) {
-    options = {};
-  }
-  this.id         = options.id;
-  this.title      = options.title;
-  this.timeout    = options.timeout || 10;
-  this.created_on = new Date().getTime();
-  this.isABadWorker = options.allowFailures ? randomFail() : false;
-}
-
-DataObject.prototype.getRunningTime = function() {
-  if (!this.completed_on) { return -1; }
-  return (this.completed_on - this.created_on);
-};
-
-DataObject.prototype.start = function() {
-  var _this = this;
-  return Q.delay(this.timeout).then(function() {
-    _this.completed_on = new Date().getTime();
-    if (_this.isABadWorker) {
-      throw _this;
-    }
-    return _this;
-  });
-};
-
-DataObject.prototype.toString = function()  {
-  var time = this.getRunningTime();
-  time = time === -1 ? "" : ("" + time + " ms - ");
-  return ("" + this.id + ": " + time + this.title);
-};
-
-exports.buildData = function (size, allowFailures) {
-  var count = 0, storage = [];
-
-  function condition() {
-    return count < size;
-  }
-
-  function worker() {
-    var dataObject;
-    dataObject = new DataObject({
-      id:            count,
-      timeout:       randomTimeout(),
-      title:         randomTitle(),
-      allowFailures: allowFailures
-    });
-    count++;
-    storage.push(dataObject);
-  }
-
-  return promiseWhile(condition, worker).then(function() {
-    console.log("Created " + size + " data objects.");
-    return storage;
-  });
-};
-
-function randomTitle() {
-  var renderer = {
-    noun: function() {
-      return nouns[Math.floor(Math.random() * nouns.length)];
-    },
-    adjective: function() {
-      return adjectives[Math.floor(Math.random() * adjectives.length)];
-    }
-  };
-
-  var phrase = phrases[Math.floor(Math.random() * phrases.length)];
-  return phrase.replace(/{(\w+)}/g, function(match, p1) {
-    return renderer[p1]();
-  });
-}
-
-function randomTimeout() {
-  return randomTimeoutBetween(100, 10000);
-}
-
-function randomTimeoutBetween(min, max) {
-  return (Math.floor((Math.random() * (max - min) + min) / 10) * 10);
-}
-
-function randomFail() {
-  return (Math.random() > 0.95);
-}
-
-var phrases = [
-  "{adjective} {noun}",
-  "The {adjective} {noun}",
-  "{noun} of {noun}",
-  "The {noun}'s {noun}",
-  "The {noun} of the {noun}",
-  "{noun} in the {noun}"
-];
-
-var nouns = [
-  "Dream","Dreamer","Dreams","Waves",
-  "Sword","Kiss","Sex","Lover",
-  "Slave","Slaves","Pleasure","Servant",
-  "Servants","Snake","Soul","Touch",
-  "Men","Women","Gift","Scent",
-  "Ice","Snow","Night","Silk","Secret","Secrets",
-  "Game","Fire","Flame","Flames",
-  "Husband","Wife","Man","Woman","Boy","Girl",
-  "Truth","Edge","Boyfriend","Girlfriend",
-  "Body","Captive","Male","Wave","Predator",
-  "Female","Healer","Trainer","Teacher",
-  "Hunter","Obsession","Hustler","Consort",
-  "Dream", "Dreamer", "Dreams","Rainbow",
-  "Dreaming","Flight","Flying","Soaring",
-  "Wings","Mist","Sky","Wind",
-  "Winter","Misty","River","Door",
-  "Gate","Cloud","Fairy","Dragon",
-  "End","Blade","Beginning","Tale",
-  "Tales","Emperor","Prince","Princess",
-  "Willow","Birch","Petals","Destiny",
-  "Theft","Thief","Legend","Prophecy",
-  "Spark","Sparks","Stream","Streams","Waves",
-  "Sword","Darkness","Swords","Silence","Kiss",
-  "Butterfly","Shadow","Ring","Rings","Emerald",
-  "Storm","Storms","Mists","World","Worlds",
-  "Alien","Lord","Lords","Ship","Ships","Star",
-  "Stars","Force","Visions","Vision","Magic",
-  "Wizards","Wizard","Heart","Heat","Twins",
-  "Twilight","Moon","Moons","Planet","Shores",
-  "Pirates","Courage","Time","Academy",
-  "School","Rose","Roses","Stone","Stones",
-  "Sorcerer","Shard","Shards","Slave","Slaves",
-  "Servant","Servants","Serpent","Serpents",
-  "Snake","Soul","Souls","Savior","Spirit",
-  "Spirits","Voyage","Voyages","Voyager","Voyagers",
-  "Return","Legacy","Birth","Healer","Healing",
-  "Year","Years","Death","Dying","Luck","Elves",
-  "Tears","Touch","Son","Sons","Child","Children",
-  "Illusion","Sliver","Destruction","Crying","Weeping",
-  "Gift","Word","Words","Thought","Thoughts","Scent",
-  "Ice","Snow","Night","Silk","Guardian","Angel",
-  "Angels","Secret","Secrets","Search","Eye","Eyes",
-  "Danger","Game","Fire","Flame","Flames","Bride",
-  "Husband","Wife","Time","Flower","Flowers",
-  "Light","Lights","Door","Doors","Window","Windows",
-  "Bridge","Bridges","Ashes","Memory","Thorn",
-  "Thorns","Name","Names","Future","Past",
-  "History","Something","Nothing","Someone",
-  "Nobody","Person","Man","Woman","Boy","Girl",
-  "Way","Mage","Witch","Witches","Lover",
-  "Tower","Valley","Abyss","Hunter",
-  "Truth","Edge"
-];
-
-var adjectives = [
-  "Lost","Only","Last","First",
-  "Third","Sacred","Bold","Lovely",
-  "Final","Missing","Shadowy","Seventh",
-  "Dwindling","Missing","Absent",
-  "Vacant","Cold","Hot","Burning","Forgotten",
-  "Weeping","Dying","Lonely","Silent",
-  "Laughing","Whispering","Forgotten","Smooth",
-  "Silken","Rough","Frozen","Wild",
-  "Trembling","Fallen","Ragged","Broken",
-  "Cracked","Splintered","Slithering","Silky",
-  "Wet","Magnificent","Luscious","Swollen",
-  "Erect","Bare","Naked","Stripped",
-  "Captured","Stolen","Sucking","Licking",
-  "Growing","Kissing","Green","Red","Blue",
-  "Azure","Rising","Falling","Elemental",
-  "Bound","Prized","Obsessed","Unwilling",
-  "Hard","Eager","Ravaged","Sleeping",
-  "Wanton","Professional","Willing","Devoted",
-  "Misty","Lost","Only","Last","First",
-  "Final","Missing","Shadowy","Seventh",
-  "Dark","Darkest","Silver","Silvery","Living",
-  "Black","White","Hidden","Entwined","Invisible",
-  "Next","Seventh","Red","Green","Blue",
-  "Purple","Grey","Bloody","Emerald","Diamond",
-  "Frozen","Sharp","Delicious","Dangerous",
-  "Deep","Twinkling","Dwindling","Missing","Absent",
-  "Vacant","Cold","Hot","Burning","Forgotten",
-  "Some","No","All","Every","Each","Which","What",
-  "Playful","Silent","Weeping","Dying","Lonely","Silent",
-  "Laughing","Whispering","Forgotten","Smooth","Silken",
-  "Rough","Frozen","Wild","Trembling","Fallen",
-  "Ragged","Broken","Cracked","Splintered"
-];
-
-},{"./promise_while":10,"q":5}],9:[function(require,module,exports){
-// PromiseController - Control the building and displaying of data objects
-var Q                      = require("q");
-var $                      = require("jquery");
-var DataGenerator          = require("./data_generator");
-var ConfirmationController = require("./confirmation_controller");
-var promiseWhile           = require("./promise_while");
-
-// PromiseController {{{1
-function PromiseController() {
-  this.controls = {
-    run_button:    $("#run-btn"),
-    allow_failues: $("#allow-failures"),
-    data_size:     $("#data-size")
-  };
-  this.info_divs = {
-    live_update: $("#run-info"),
-    count:       $("#count"),
-    summary:     $("#info"),
-    intro:       $("#intro")
-  };
-  this.loading_overlay = $("#loading");
-  this.content_list = $("#list");
-}
-
-// PromiseController::init {{{1
-PromiseController.prototype.init = function init() {
-  this.controls.run_button.button()
-    .click($.proxy(this, "start"));
-  return this;
-};
-
-// PromiseController::allowFailures {{{1
-PromiseController.prototype.allowFailures = function allowFailures() {
-  return this.controls.allow_failues.is(":checked");
-};
-
-// PromiseController::dataSetSize {{{1
-PromiseController.prototype.dataSetSize = function dataSetSize() {
-  return this.controls.data_size.val();
-};
-
-// PromiseController::start {{{1
-PromiseController.prototype.start = function start() {
-  var _this = this;
-  this.disableControls();
-
-  var waitForValidation = this.validateDataSize();
-  waitForValidation.then($.proxy(this, "showLoading"));
-  return waitForValidation.then(function() {
-    _this.tasks_complete = 0;
-    _this.start_time = new Date().getTime();
-    _this.end_time = null;
-    _this.setupInfoDisplay();
-
-    var waitForDOM  = waitForValidation.delay(1).then($.proxy(_this, "buildDom"));
-    waitForDOM.then(function(items) {
-      _this.content_list_items = items;
-    });
-
-    var waitForData = waitForValidation.delay(1).then($.proxy(_this, "generateData"));
-
-    var waitForSetup = Q.all([waitForDOM, waitForData]);
-    waitForSetup.then($.proxy(_this, "hideLoading"));
-
-    var waitForExecution = waitForSetup
-      .get(1).then($.proxy(_this, "execute"));
-
-    return waitForExecution
-      .then(
-        $.proxy(_this, "displayResult", true),
-        $.proxy(_this, "displayResult", false),
-        $.proxy(_this, "resolveDataObject")
-      )
-      .fin($.proxy(_this, "finish"));
-  }).fail($.proxy(this, "finish"));
-};
-
-// PromiseController::enableControls {{{1
-PromiseController.prototype.enableControls = function enableControls() {
-  this.controls.run_button.button("enable");
-  this.controls.data_size.prop("disabled", false);
-  this.controls.allow_failues.prop("disabled", false);
-  return arguments[0];
-};
-
-// PromiseController::disableControls {{{1
-PromiseController.prototype.disableControls= function disableControls() {
-  this.controls.run_button.button("disable");
-  this.controls.data_size.prop("disabled", true);
-  this.controls.allow_failues.prop("disabled", true);
-  return arguments[0];
-};
-
-// PromiseController::showLoading {{{1
-PromiseController.prototype.showLoading = function showLoading() {
-  this.info_divs.intro.hide();
-  this.loading_overlay.show();
-  return arguments[0];
-};
-
-// PromiseController::hideLoading {{{1
-PromiseController.prototype.hideLoading = function hideLoading() {
-  this.loading_overlay.hide();
-  return arguments[0];
-};
-
-// PromiseController::finish {{{1
-PromiseController.prototype.finish = function finish() {
-  this.hideLoading();
-  this.enableControls();
-};
-
-// PromiseController::validateDataSize {{{1
-PromiseController.prototype.validateDataSize = function validateDataSize() {
-  var size = this.dataSetSize();
-  var confirmation = ConfirmationController.getInstance();
-  var message;
-  if (size >= 70000) {
-    message = "Gulp! I really think that is too high. Blue smoke will probubly come out the back of your computer! <strong>Are you absolutly sure?</strong>";
-  }
-  else if (size >= 40000) {
-    message = "Whoa Nelly! That's a lot! The browser will probubly cry. Are you really sure you want to do this?";
-  }
-  else if (size >= 10000) {
-    message = "That's getting a little heavy. Are you sure you want to bog your browser down?";
-  }
-  else {
-    return Q("Data size ok");
-  }
-  return confirmation.open(message).promise();
-};
-
-// PromiseController::buildDom {{{1
-PromiseController.prototype.buildDom = function buildDom() {
-  var _this = this;
-  var list_items = "";
-  var count = 0;
-  var size = this.dataSetSize();
-
-  function condition() {
-    return count < size;
-  }
-
-  function worker() {
-    list_items += '<div class="list-item pending ui-corner-all">' + count + ': Pending...</div>';
-    count++;
-  }
-
-  return promiseWhile(condition, worker).then(function() {
-    _this.content_list.empty().append(list_items);
-    return _this.content_list.children();
-  });
-};
-
-// PromiseController::generateData {{{1
-PromiseController.prototype.generateData = function generateData() {
-  return DataGenerator.buildData(this.dataSetSize(), this.allowFailures());
-};
-
-// PromiseController::execute {{{1
-PromiseController.prototype.execute = function execute(data_set) {
-  var _this        = this;
-  var count        = 0;
-  var size         = data_set.length;
-  var final_result = true;
-  var defer        = Q.defer();
-  var promises     = [];
-  var promise;
-
-  function pass(data) {
-    defer.notify(data);
-  }
-
-  function fail(data) {
-    final_result = false;
-    defer.notify(data);
-  }
-
-  function condition() {
-    return count < size;
-  }
-
-  function worker() {
-    promise = data_set[count].start();
-    promise.then(pass, fail);
-    promises.push(promise);
-    count++;
-  }
-
-  function dataFinished(data_set) {
-    if (final_result) {
-      defer.resolve(data_set);
-    }
-    else {
-      defer.reject(data_set);
-    }
-  }
-
-  return promiseWhile(condition, worker).then(function() {
-    Q.allSettled(promises).then(dataFinished).done();
-    return defer.promise;
-  });
-};
-
-// PromiseController::displayResult {{{1
-PromiseController.prototype.displayResult = function displayResult(allFulfilled, data_set) {
-  this.end_time = new Date().getTime();
-  this.info_divs.live_update.hide();
-  this.info_divs.summary
-    .text("Done. " + data_set.length + " objects processed in " + this.calculateTime() + " ms.")
-    .removeClass("fulfilled").removeClass("rejected")
-    .addClass(allFulfilled ? "fulfilled" : "rejected")
-    .show();
-};
-
-// PromiseController::setupInfoDisplay {{{1
-PromiseController.prototype.setupInfoDisplay = function setupInfoDisplay() {
-  this.info_divs.summary.hide();
-  this.displayCount();
-  this.info_divs.live_update.show();
-};
-
-// PromiseController::resolveDataObject {{{1
-PromiseController.prototype.resolveDataObject = function resolveDataObject(data) {
-  this.tasks_complete++;
-  this.displayCount();
-  $(this.content_list_items[data.id])
-    .removeClass("pending")
-    .addClass(data.isABadWorker ? "rejected" : "fulfilled")
-    .addClass("box-shadow")
-    .text(data.toString());
-};
-
-// PromiseController::displayCount {{{1
-PromiseController.prototype.displayCount = function displayCount() {
-  this.info_divs.count.text("" + this.tasks_complete + " (" + this.calculateTime() + " ms)");
-};
-
-// PromiseController::calculateTime {{{1
-PromiseController.prototype.calculateTime = function calculateTime() {
-  var current_time = this.end_time || new Date().getTime();
-  return current_time - this.start_time;
-};
-// }}}1
-
-module.exports = PromiseController;
-/* vim:set sw=2 ts=2 et fdm=marker: */
-
-},{"./confirmation_controller":7,"./data_generator":8,"./promise_while":10,"jquery":"0WaVMD","q":5}],10:[function(require,module,exports){
+},{"q":5}],11:[function(require,module,exports){
 // PromiseWhile - an extention to do for loops in a non-blocking way
 //
 // Taken from http://stackoverflow.com/a/17238793/227176
@@ -2596,5 +2331,5 @@ function promiseWhile(condition, body) {
 
 module.exports = promiseWhile;
 
-},{"q":5}]},{},[6])
+},{"q":5}]},{},[8,9,7,6])
 ;

@@ -1,4 +1,4 @@
-@import "styles/jquery-ui.css";
+@import "jquery-ui.css";
 code{padding:0 4px;color:#000}
 pre{color:#657b83}
 code,pre{border:thin solid #000;border-radius:3px;background-color:#fdf6e3;font-family:monospace}
