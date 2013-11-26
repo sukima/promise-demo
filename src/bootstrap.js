@@ -13,4 +13,5 @@ $(function init() {
   var appController = new PromiseController();
   appController.init();
   $("#logo").click(exports.showAbout);
+  $("a.button").button();
 });
