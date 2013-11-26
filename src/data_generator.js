@@ -8,6 +8,7 @@
 Q = require("q");
 promiseWhile = require("./promise_while");
 
+// DataObject {{{1
 function DataObject(options) { /*jshint eqnull:true */
   if (options == null) {
     options = {};
@@ -19,11 +20,13 @@ function DataObject(options) { /*jshint eqnull:true */
   this.isABadWorker = options.allowFailures ? randomFail() : false;
 }
 
+// DataObject::getRunningTime {{{1
 DataObject.prototype.getRunningTime = function() {
   if (!this.completed_on) { return -1; }
   return (this.completed_on - this.created_on);
 };
 
+// DataObject::start {{{1
 DataObject.prototype.start = function() {
   var _this = this;
   return Q.delay(this.timeout).then(function() {
@@ -35,12 +38,14 @@ DataObject.prototype.start = function() {
   });
 };
 
+// DataObject::toString {{{1
 DataObject.prototype.toString = function()  {
   var time = this.getRunningTime();
   time = time === -1 ? "" : ("" + time + " ms - ");
   return ("" + this.id + ": " + time + this.title);
 };
 
+// exports.buildData {{{1
 exports.buildData = function (size, allowFailures) {
   var count = 0, storage = [];
 
@@ -66,6 +71,8 @@ exports.buildData = function (size, allowFailures) {
   });
 };
 
+// Helper Functions {{{1
+// randomTitle {{{2
 function randomTitle() {
   var renderer = {
     noun: function() {
@@ -82,18 +89,23 @@ function randomTitle() {
   });
 }
 
+// randomTimeout {{{2
 function randomTimeout() {
   return randomTimeoutBetween(100, 10000);
 }
 
+// randomTimeoutBetween {{{2
 function randomTimeoutBetween(min, max) {
   return (Math.floor((Math.random() * (max - min) + min) / 10) * 10);
 }
 
+// randomFail {{{2
 function randomFail() {
   return (Math.random() > 0.95);
 }
 
+// Data Variables {{{1
+// phrases {{{2
 var phrases = [
   "{adjective} {noun}",
   "The {adjective} {noun}",
@@ -103,6 +115,7 @@ var phrases = [
   "{noun} in the {noun}"
 ];
 
+// nouns {{{2
 var nouns = [
   "Dream","Dreamer","Dreams","Waves",
   "Sword","Kiss","Sex","Lover",
@@ -158,6 +171,7 @@ var nouns = [
   "Truth","Edge"
 ];
 
+// adjectives {{{2
 var adjectives = [
   "Lost","Only","Last","First",
   "Third","Sacred","Bold","Lovely",
@@ -192,3 +206,6 @@ var adjectives = [
   "Rough","Frozen","Wild","Trembling","Fallen",
   "Ragged","Broken","Cracked","Splintered"
 ];
+// }}}1
+
+/* vim:set sw=2 ts=2 et fdm=marker: */
