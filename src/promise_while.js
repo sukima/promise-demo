@@ -14,10 +14,10 @@ function promiseWhile(condition, body) {
         // When the result of calling `condition` is no longer true, we are
         // done.
         if (!condition()) return done.resolve();
-        // Use `when`, in case `body` does not return a promise.
+        // Use `fcall`, in case `body` does not return a promise.
         // When it completes loop again otherwise, if it fails, reject the
         // done promise
-        Q.when(body(), loop, done.reject);
+        Q.fcall(body).then(loop, done.reject);
     }
 
     // Start running the loop in the next tick so that this function is
