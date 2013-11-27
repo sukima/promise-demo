@@ -111,7 +111,8 @@ module.exports = function(grunt) {
         'spec/lib/**',
         'spec/index.html',
         'spec/specs.js',
-        'spec/fixtures/**'
+        'spec/fixtures/**',
+        'impress/**'
       ]
     }
 
