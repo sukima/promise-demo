@@ -53,6 +53,7 @@ describe("PromiseController", function() {
 
     it("should run start()", function() {
       spyOn(this.pc, "start");
+      this.pc.init();
       expect( this.pc.start ).not.toHaveBeenCalled();
       $("#run-btn").trigger("click");
       expect( this.pc.start ).toHaveBeenCalled();
