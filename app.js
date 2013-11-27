@@ -2370,14 +2370,15 @@ PromiseController.prototype.init = function init() {
   return this;
 };
 
-// PromiseController::allowFailures {{{1
-PromiseController.prototype.allowFailures = function allowFailures() {
+// PromiseController::getAllowFailures {{{1
+PromiseController.prototype.getAllowFailures = function getAllowFailures() {
   return this.controls.allow_failues.is(":checked");
 };
 
-// PromiseController::dataSetSize {{{1
-PromiseController.prototype.dataSetSize = function dataSetSize() {
-  return this.controls.data_size.val();
+// PromiseController::getDataSetSize {{{1
+PromiseController.prototype.getDataSetSize = function getDataSetSize() {
+  var value = parseInt(this.controls.data_size.val(), 10);
+  return isNaN(value) ? 0 : value;
 };
 
 // PromiseController::start {{{1
@@ -2461,7 +2462,7 @@ PromiseController.prototype.finish = function finish() {
 
 // PromiseController::validateDataSize {{{1
 PromiseController.prototype.validateDataSize = function validateDataSize() {
-  var size = this.dataSetSize();
+  var size = this.getDataSetSize();
   var confirmation = ConfirmationController.getInstance();
   var message;
   if (size >= 70000) {
@@ -2484,7 +2485,7 @@ PromiseController.prototype.buildDom = function buildDom() {
   var _this = this;
   var list_items = "";
   var count = 0;
-  var size = this.dataSetSize();
+  var size = this.getDataSetSize();
 
   function condition() {
     return count < size;
@@ -2503,7 +2504,7 @@ PromiseController.prototype.buildDom = function buildDom() {
 
 // PromiseController::generateData {{{1
 PromiseController.prototype.generateData = function generateData() {
-  return DataGenerator.buildData(this.dataSetSize(), this.allowFailures());
+  return DataGenerator.buildData(this.getDataSetSize(), this.getAllowFailures());
 };
 
 // PromiseController::execute {{{1
