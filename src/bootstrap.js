@@ -3,15 +3,23 @@ var jq_alert = require("./confirmation_controller").alert;
 var PromiseController = require("./promise_controller");
 require("jquery_ui");
 
-var version = "0.0.1";
-
 function showAbout() {
-  jq_alert("Promise-Demo project, version " + exports.version, "About");
+  var pkg = require("../package.json");
+  var message = "Promise-Demo<br>Version " + pkg.version;
+  if (pkg.author) {
+    message += "<br>By " + pkg.author.replace(/\s*[\(<].*$/, "");
+  }
+  if (pkg.contributors) {
+    pkg.contributors.forEach(function(contributor) {
+      message += ", " + contributor.name;
+    });
+  }
+  jq_alert(message);
 }
 
 $(function init() {
   var appController = new PromiseController();
   appController.init();
-  $("#logo").click(exports.showAbout);
+  $("#logo").click(showAbout);
   $("a.button").button();
 });
