@@ -1998,25 +1998,67 @@ return Q;
 });
 
 },{"__browserify_process":4}],6:[function(require,module,exports){
+module.exports={
+  "name": "promise-demo",
+  "version": "0.0.1",
+  "description": "I promise this is a demo on promises",
+  "license": "http://tritarget.org/wywtpl",
+  "author": "Devin Weaver (@sukima) <suki@tritarget.org>",
+  "contributors": [
+    {
+      "name": "Justin Gill",
+      "email": "jgillcentral@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sukima/promise-demo.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "browserify": "~2.35.2",
+    "q": "~0.9.7",
+    "jasmine-jquery": "~1.3.3",
+    "grunt-browserify": "~1.2.11",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-stylus": "~0.10.0",
+    "grunt-gh-pages": "~0.8.1"
+  }
+}
+
+},{}],7:[function(require,module,exports){
 var $ = require("jquery");
 var jq_alert = require("./confirmation_controller").alert;
 var PromiseController = require("./promise_controller");
 require("jquery_ui");
 
-var version = "0.0.1";
-
 function showAbout() {
-  jq_alert("Promise-Demo project, version " + exports.version, "About");
+  var pkg = require("../package.json");
+  var message = "Promise-Demo<br>Version " + pkg.version;
+  if (pkg.author) {
+    message += "<br>By " + pkg.author.replace(/\s*[\(<].*$/, "");
+  }
+  if (pkg.contributors) {
+    pkg.contributors.forEach(function(contributor) {
+      message += ", " + contributor.name;
+    });
+  }
+  jq_alert(message);
 }
 
 $(function init() {
   var appController = new PromiseController();
   appController.init();
-  $("#logo").click(exports.showAbout);
+  $("#logo").click(showAbout);
   $("a.button").button();
 });
 
-},{"./confirmation_controller":7,"./promise_controller":9,"jquery":"0WaVMD","jquery_ui":"Fy2UMz"}],7:[function(require,module,exports){
+},{"../package.json":6,"./confirmation_controller":8,"./promise_controller":10,"jquery":"0WaVMD","jquery_ui":"Fy2UMz"}],8:[function(require,module,exports){
 // ConfirmationController - Controls a confirmation popup
 var Q = require("q");
 var singleton_instance;
@@ -2117,7 +2159,7 @@ ConfirmationController.alert = function alert(message, title) {
 module.exports = ConfirmationController;
 /* vim:set ts=2 sw=2 et fdm=marker: */
 
-},{"q":5}],8:[function(require,module,exports){
+},{"q":5}],9:[function(require,module,exports){
 // DataGenerator - A generator for fake data
 //
 // This module uses a random timeout to delay the resolution of any promise.
@@ -2335,7 +2377,7 @@ module.exports = DataObject;
 
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"./promise_while":10,"q":5}],9:[function(require,module,exports){
+},{"./promise_while":11,"q":5}],10:[function(require,module,exports){
 // PromiseController - Control the building and displaying of data objects
 var Q                      = require("q");
 var $                      = require("jquery");
@@ -2608,7 +2650,7 @@ PromiseController.prototype.reset = function reset() {
 module.exports = PromiseController;
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"./confirmation_controller":7,"./data_generator":8,"./promise_while":10,"jquery":"0WaVMD","q":5}],10:[function(require,module,exports){
+},{"./confirmation_controller":8,"./data_generator":9,"./promise_while":11,"jquery":"0WaVMD","q":5}],11:[function(require,module,exports){
 // PromiseWhile - an extention to do for loops in a non-blocking way
 //
 // Taken from http://stackoverflow.com/a/17238793/227176
@@ -2642,5 +2684,5 @@ function promiseWhile(condition, body) {
 
 module.exports = promiseWhile;
 
-},{"q":5}]},{},[6])
+},{"q":5}]},{},[7])
 ;
