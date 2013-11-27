@@ -39,12 +39,19 @@
         <a href="spec/" class="button">Run Jasmine Specs</a>
         <a href="impress/" class="button">View Presentation</a>
       </div>
-      <h4>Data Generation</h4>
+      <p>I'm looking for contributions. Anyone interested in helping I have the folowing things that could be easy to contribut to:</p>
+      <ul>
+        <li>Need to expand on this <em>README</em> text. How to use promises and how to test.</li>
+        <li>Looking to make a presentation of promise with <a href="http://bartaz.github.io/impress.js/#/bored">impress.js</a> (try the <a href="https://npmjs.org/package/generator-impress">Yeoman generator</a>).</li>
+        <li>Looking to give more test coverage. The <code>promise_controller.spec.js</code> is especially weak at the moment.</li>
+      </ul>
+      <p>Check out the <a href="https://github.com/sukima/promise-demo">source on GitHub</a> and <strong>contribute!</strong></p>
+      <h2>Data Generation</h2>
       <p>This demo generates <em>data</em> which are meant to simulate network latency. They are timed events that will resolve or reject based on a random <code>setTimeout</code>.</p>
       <p>The random timeout is anywhere between <strong>500 ms</strong> to <strong>10 seconds</strong>. Which means if we were to <em>synchronously</em> wait for 1000 workers then it could take up to <strong>10,000 seconds!</strong> Using an <em>asynchronous</em> pattern the same data set can complete in just over <strong>10 seconds!</strong></p>
       <p>This demo demonstrates this processing by displaying the resolved workers as they complete. Each worker has a random <em>title</em> and a unique ID. When it's random timer completes the data is displayed in the box associated with it's ID.</p>
       <p>We construct boxes for each worker but leave it <em>blank</em> so you will see a grid of boxes and they will display a title and change color depending on the resolution of the worker. Either <span class="fulfilled">GREEN</span> for resolved or in some random cases <span class="rejected">RED</span> for rejected workers.</p>
-      <h4>Intro to promises</h4>
+      <h2>Intro to promises</h2>
 <pre class='vimCodeElement'>
 <span id="L1" class="LineNr"> 1 </span><span class="Identifier">function</span> normalFunction() <span class="Identifier">{</span>
 <span id="L2" class="LineNr"> 2 </span>  <span class="Statement">if</span> (condition) <span class="Identifier">{</span>
@@ -71,7 +78,7 @@
 <span id="L23" class="LineNr">23 </span>promise.fail(failed);   <span class="Comment">// =&gt; &quot;reason&quot;</span>
 <span id="L24" class="LineNr">24 </span>promise.then(callback, failed);
 </pre>
-      <h4>Testing promises</h4>
+      <h2>Testing promises</h2>
     </div>
   </div>
   <div id="list"></div>
