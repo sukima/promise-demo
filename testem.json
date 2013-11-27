@@ -1,0 +1,9 @@
+{
+  "framework": "jasmine",
+  "test_page": "spec/index.html",
+  "src_files": [
+    "spec/src/**/*.js",
+    "src/**/*.js"
+  ],
+  "before_tests": "grunt"
+}
