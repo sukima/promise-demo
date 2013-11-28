@@ -1,25 +1,46 @@
 var $ = require("jquery");
-var jq_alert = require("./confirmation_controller").alert;
-var PromiseController = require("./promise_controller");
 require("jquery_ui");
 
-function showAbout() {
+// showAbout {{{1
+exports.showAbout = function showAbout() {
   var pkg = require("../package.json");
   var message = "Promise-Demo<br>Version " + pkg.version;
+  var jq_alert = require("./confirmation_controller").alert;
+
+
   if (pkg.author) {
     message += "<br>By " + pkg.author.replace(/\s*[\(<].*$/, "");
   }
+
   if (pkg.contributors) {
     pkg.contributors.forEach(function(contributor) {
       message += ", " + contributor.name;
     });
   }
-  jq_alert(message);
-}
 
-$(function init() {
-  var appController = new PromiseController();
-  appController.init();
-  $("#logo").click(showAbout);
-  $("a.button").button();
-});
+  return jq_alert(message);
+};
+
+// init {{{1
+exports.init = function init(controller) {
+  return $(function() {
+    var AppController;
+
+    switch (controller) {
+      // case "RaceController":
+      //   AppController = require("./race_controller");
+      //   break;
+      default:
+        AppController = require("./promise_controller");
+    }
+
+    (new AppController()).init();
+
+    $("#logo").click(exports.showAbout);
+    $("a.button").button();
+  });
+};
+// }}}1
+
+window.APP = module.exports;
+/* vim:set ts=2 sw=2 et fdm=marker: */
