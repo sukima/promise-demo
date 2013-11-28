@@ -81,17 +81,23 @@ ConfirmationController.getInstance = function getInstance() {
 // ConfirmationController.alert {{{1
 // A one-off jQuery-UI replacement for JS alert()
 ConfirmationController.alert = function alert(message, title) {
+  var defer = Q.defer();
+
   if (!message) {
     message = "ConfirmationController.alert called without a message";
   }
+
   $("<div/>").clone().html(message).dialog({
-    title: title || "Alert",
+    title:     title || "Alert",
     resizable: false,
-    modal: true,
+    modal:     true,
+    close:     defer.resolve,
     buttons: {
       "Ok": function() { $(this).dialog("close"); }
     }
   });
+
+  return defer.promise;
 };
 // }}}1
 

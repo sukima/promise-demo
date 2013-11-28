@@ -137,6 +137,18 @@ describe("ConfirmationController", function() {
       );
     });
 
+    it("should return a promise", function() {
+      expect( ConfirmationController.alert().then ).toBeDefined();
+    });
+
+    it("should resolve the promise when dialog is closed", function() {
+      runs(function() {
+        var promise = ConfirmationController.alert();
+        this.dialogSpy.mostRecentCall.args[0].close();
+        return promise.fail(jasmine.expectFulfilled);
+      });
+    });
+
   });
 
 });
