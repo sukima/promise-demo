@@ -4,6 +4,7 @@ var $                      = require("jquery");
 var DataGenerator          = require("./data_generator");
 var ConfirmationController = require("./confirmation_controller");
 var promiseWhile           = require("./promise_while");
+var OverlayController      = require("./overlay_controller");
 
 // PromiseController {{{1
 function PromiseController() {
@@ -16,11 +17,10 @@ function PromiseController() {
   this.info_divs = {
     live_update: $("#run-info"),
     count:       $("#count"),
-    summary:     $("#info"),
-    intro:       $("#intro")
+    summary:     $("#info")
   };
-  this.loading_overlay = $("#loading");
   this.content_list = $("#list");
+  this.overlay = new OverlayController();
 }
 
 // PromiseController::init {{{1
@@ -99,21 +99,12 @@ PromiseController.prototype.disableControls= function disableControls() {
 
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
-  var waitForHide = Q.defer(), _this = this;
-  this.info_divs.intro.hide("fade", 1000, waitForHide.resolve);
-  return waitForHide.promise.then(function() {
-    var waitForShow = Q.defer();
-    _this.loading_overlay.show("fade", 100, waitForShow.resolve);
-    // Add an artificial delay so the user can see the loading screen. Some
-    // browsers might run faster then the user interface can catch up.
-    return waitForShow.promise.delay(500);
-  });
+  return this.overlay.show();
 };
 
 // PromiseController::hideLoading {{{1
 PromiseController.prototype.hideLoading = function hideLoading() {
-  this.loading_overlay.hide();
-  return arguments[0];
+  return this.overlay.hide();
 };
 
 // PromiseController::finish {{{1
@@ -261,9 +252,7 @@ PromiseController.prototype.reset = function reset() {
   this.info_divs.live_update.hide();
   this.info_divs.summary.hide();
   this.content_list.empty();
-  Q.delay(1).then(function() {
-    _this.info_divs.intro.show("blind", 1000);
-  });
+  this.overlay.reset();
 };
 // }}}1
 
