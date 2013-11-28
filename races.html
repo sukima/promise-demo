@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Promises Demo - Horse Racing</title>
+  <link rel="stylesheet" href="styles/index.css">
+  <script src="libs.js"></script>
+  <script src="app.js"></script>
+  <script>
+    APP.init("RaceController");
+  </script>
+</head>
+<body>
+  <div id="github-ribbon">
+    <a href="https://github.com/sukima/promise-demo"><img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+  </div>
+  <div id="loading" class="overlay" style="display:none">
+    <img src="images/loading.gif" alt="Loading...">
+  </div>
+  <div id="controls">
+    <div>
+      <button id="reset">Reset</button>
+      <button id="run-btn">Run</button>
+    </div>
+    <div id="info" style="display:none" class="ui-corner-all"></div>
+  </div>
+  <div id="intro">
+    <div class="centered-box ui-corner-all box-shadow">
+      <img id="logo" src="images/logo.svg" width="100" height="100" alt="Promises A+ / Then logo">
+      <h1>Horse Race Demo</h1>
+      <p>We will illustrate the asynchronous nature of JavaScript and how we managed it using Promises.</p>
+      <div>
+        <a href="index.html" class="button">Promises Demo</a>
+        <a href="spec/" class="button">Run Jasmine Specs</a>
+        <a href="impress/" class="button">View Presentation</a>
+      </div>
+    </div>
+  </div>
+  <div id="list"></div>
+  <div id="notice" title="Warning!"></div>
+</body>
+</html>

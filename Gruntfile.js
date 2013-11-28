@@ -70,7 +70,14 @@ module.exports = function(grunt) {
         tasks: ['browserify:specs']
       },
       html: {
-        files: ['index.html', 'styles/**/*.css', 'spec/index.html', 'spec/lib/*', 'spec/fixtures/*']
+        files: [
+          'index.html',
+          'races.html',
+          'styles/**/*.css',
+          'spec/index.html',
+          'spec/lib/*',
+          'spec/fixtures/*'
+        ]
       },
       style: {
         files: ['styles/**/*.styl'],
@@ -108,6 +115,7 @@ module.exports = function(grunt) {
         'libs.js',
         'app.js',
         'index.html',
+        'races.html',
         'spec/lib/**',
         'spec/index.html',
         'spec/specs.js',
