@@ -3,7 +3,11 @@ describe("OverlayController", function() {
 
   beforeEach(function() {
     loadFixtures("overlay_controller.html");
-    this.oc = new OverlayController();
+    this.oc = new OverlayController({
+      intro_fade:   10,
+      overlay_fade: 20,
+      min_delay:    30
+    });
   });
 
   describe("#show", function() {
