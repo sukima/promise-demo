@@ -51,7 +51,7 @@ describe("DataGenerator", function() {
             function() {
               expect( _this.test_obj.completed_on ).toEqual(jasmine.any(Number));
             },
-            jasmine.expectedFulfilled
+            jasmine.expectFulfilled
           );
         });
       });
@@ -63,7 +63,7 @@ describe("DataGenerator", function() {
             function(value) {
               expect( value ).toBe(_this.test_obj);
             },
-            jasmine.expectedFulfilled
+            jasmine.expectFulfilled
           );
         });
       });
@@ -73,7 +73,7 @@ describe("DataGenerator", function() {
         var _this = this;
         runs(function() {
           return this.test_obj.start().then(
-            jasmine.expectedRejected,
+            jasmine.expectRejected,
             function(reason) {
               expect( reason ).toBe(_this.test_obj);
             }
