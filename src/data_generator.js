@@ -32,13 +32,17 @@ DataObject.prototype.getRunningTime = function() {
 // DataObject::start {{{1
 DataObject.prototype.start = function() {
   var _this = this;
-  return Q.delay(this.timeout).then(function() {
+  var defer = Q.defer();
+  Q.delay(this.timeout).then(function() {
     _this.completed_on = new Date().getTime();
     if (_this.isABadWorker) {
-      throw _this;
+      defer.reject(_this);
     }
-    return _this;
+    else {
+      defer.resolve(_this);
+    }
   });
+  return defer.promise;
 };
 
 // DataObject::toString {{{1
