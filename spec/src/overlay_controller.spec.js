@@ -13,7 +13,7 @@ describe("OverlayController", function() {
   describe("#show", function() {
 
     it("should return a promise", function() {
-      expect( this.oc.show().then ).toBeDefined();
+      expect( this.oc.show() ).toBeAPromise();
     });
 
     it("should hide intro and show overlay", function() {
@@ -33,7 +33,7 @@ describe("OverlayController", function() {
   describe("#hide", function() {
 
     it("should return a promise", function() {
-      expect( this.oc.hide().then ).toBeDefined();
+      expect( this.oc.hide() ).toBeAPromise();
     });
 
     it("should hide overlay", function() {
@@ -55,7 +55,7 @@ describe("OverlayController", function() {
   describe("#reset", function() {
 
     it("should return a promise", function() {
-      expect( this.oc.reset().then ).toBeDefined();
+      expect( this.oc.reset() ).toBeAPromise();
     });
 
     it("should show intro", function() {
