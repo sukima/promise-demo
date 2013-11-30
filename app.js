@@ -2000,7 +2000,7 @@ return Q;
 },{"__browserify_process":4}],6:[function(require,module,exports){
 module.exports={
   "name": "promise-demo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "I promise this is a demo on promises",
   "private": true,
   "license": "http://tritarget.org/wywtpl",
