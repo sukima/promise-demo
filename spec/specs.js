@@ -2137,132 +2137,237 @@ describe("ConfirmationController", function() {
       );
     });
 
+    it("should return a promise", function() {
+      expect( ConfirmationController.alert().then ).toBeDefined();
+    });
+
+    it("should resolve the promise when dialog is closed", function() {
+      runs(function() {
+        var promise = ConfirmationController.alert();
+        this.dialogSpy.mostRecentCall.args[0].close();
+        return promise.fail(jasmine.expectFulfilled);
+      });
+    });
+
   });
 
 });
 
-},{"../../src/confirmation_controller":12}],7:[function(require,module,exports){
+},{"../../src/confirmation_controller":13}],7:[function(require,module,exports){
 describe("DataGenerator", function() {
-	var DataGenerator = require("../../src/data_generator");
+  var DataGenerator = require("../../src/data_generator");
 
-	describe("DataObject", function() {
+  describe("DataObject", function() {
 
-		beforeEach(function() {
-			this.test_obj = new DataGenerator({id: 0, title: "foobar"});
-		});
+    beforeEach(function() {
+      this.test_obj = new DataGenerator({id: 0, title: "foobar"});
+    });
 
-		describe("#constructor", function() {
+    describe("#constructor", function() {
 
-			it("should set a created_on timestamp", function() {
-				expect( this.test_obj.created_on ).toBeDefined();
-			});
+      it("should set a created_on timestamp", function() {
+        expect( this.test_obj.created_on ).toBeDefined();
+      });
 
-			it("should throw an exception if arguments are missing", function() {
-				expect(function() { new DataGenerator({}); }).toThrow();
-				expect(function() { new DataGenerator({ id: 1 }); }).toThrow();
-				expect(function() { new DataGenerator({ title: "bar" }); }).toThrow();
-			});
+      it("should throw an exception if arguments are missing", function() {
+        expect(function() { new DataGenerator({}); }).toThrow();
+        expect(function() { new DataGenerator({ id: 1 }); }).toThrow();
+        expect(function() { new DataGenerator({ title: "bar" }); }).toThrow();
+      });
 
-		});
+    });
 
-		describe("#getRunningTime", function() {
+    describe("#getRunningTime", function() {
 
-			it("should return -1 when object has not completed yet", function() {
-				expect( this.test_obj.getRunningTime() ).toBe(-1);
-			});
+      it("should return -1 when object has not completed yet", function() {
+        expect( this.test_obj.getRunningTime() ).toBe(-1);
+      });
 
-			it("should return a number", function() {
-				this.test_obj.completed_on = new Date().getTime() + 1000;
-				expect( this.test_obj.getRunningTime() ).toEqual(jasmine.any(Number));
-			});
+      it("should return a number", function() {
+        this.test_obj.completed_on = new Date().getTime() + 1000;
+        expect( this.test_obj.getRunningTime() ).toEqual(jasmine.any(Number));
+      });
 
-		});
+    });
 
-		describe("#start", function() {
+    describe("#start", function() {
 
-			beforeEach(function() {
-				this.test_obj.timeout = 1;
-			});
+      beforeEach(function() {
+        this.test_obj.timeout = 1;
+      });
 
-			it("should return a promise", function() {
-				expect( this.test_obj.start().then ).toBeDefined();
-			});
+      it("should return a promise", function() {
+        expect( this.test_obj.start().then ).toBeDefined();
+      });
 
-			it("should assign a completed_on when resolved", function() {
-				var _this = this;
-				runs(function() {
-					return this.test_obj.start().then(
-						function() {
-							expect( _this.test_obj.completed_on ).toEqual(jasmine.any(Number));
-						},
-						jasmine.expectedFulfilled
-					);
-				});
-			});
+      it("should assign a completed_on when resolved", function() {
+        var _this = this;
+        runs(function() {
+          return this.test_obj.start().then(
+            function() {
+              expect( _this.test_obj.completed_on ).toEqual(jasmine.any(Number));
+            },
+            jasmine.expectFulfilled
+          );
+        });
+      });
 
-			it("should provide itself as the value to the fulfilled promise", function() {
-				var _this = this;
-				runs(function() {
-					return this.test_obj.start().then(
-						function(value) {
-							expect( value ).toBe(_this.test_obj);
-						},
-						jasmine.expectedFulfilled
-					);
-				});
-			});
+      it("should provide itself as the value to the fulfilled promise", function() {
+        var _this = this;
+        runs(function() {
+          return this.test_obj.start().then(
+            function(value) {
+              expect( value ).toBe(_this.test_obj);
+            },
+            jasmine.expectFulfilled
+          );
+        });
+      });
 
-			it("should provide itself as the value to the rejected promise", function() {
-				this.test_obj.isABadWorker = true;
-				var _this = this;
-				runs(function() {
-					return this.test_obj.start().then(
-						jasmine.expectedRejected,
-						function(reason) {
-							expect( reason ).toBe(_this.test_obj);
-						}
-					);
-				});
-			});
+      it("should provide itself as the value to the rejected promise", function() {
+        this.test_obj.isABadWorker = true;
+        var _this = this;
+        runs(function() {
+          return this.test_obj.start().then(
+            jasmine.expectRejected,
+            function(reason) {
+              expect( reason ).toBe(_this.test_obj);
+            }
+          );
+        });
+      });
 
-		});
+    });
 
-		describe("#toString", function() {
+    describe("#toString", function() {
 
-			it("should return a string", function() {
-				expect( this.test_obj.toString() ).toEqual(jasmine.any(String));
-			});
+      it("should return a string", function() {
+        expect( this.test_obj.toString() ).toEqual(jasmine.any(String));
+      });
 
-		});
+    });
 
-	});
+  });
 
-	describe("#buildData (static)", function() {
+  describe("#buildData (static)", function() {
 
-		it("should return a promise", function() {
-			expect( DataGenerator.buildData(1).then ).toBeDefined();
-		});
+    it("should return a promise", function() {
+      expect( DataGenerator.buildData(1).then ).toBeDefined();
+    });
 
-		it("should create an array of data objects", function() {
-			runs(function() {
-				return DataGenerator.buildData(3).then(
-					function(value) {
-						expect( value ).toEqual([
-							jasmine.any(DataGenerator),
-							jasmine.any(DataGenerator),
-							jasmine.any(DataGenerator)
-						]);
-					},
-					jasmine.expectFulfilled
-				);
-			});
-		});
+    it("should create an array of data objects", function() {
+      runs(function() {
+        return DataGenerator.buildData(3).then(
+          function(value) {
+            expect( value ).toEqual([
+              jasmine.any(DataGenerator),
+              jasmine.any(DataGenerator),
+              jasmine.any(DataGenerator)
+            ]);
+          },
+          jasmine.expectFulfilled
+        );
+      });
+    });
 
-	});
+  });
 
 });
+/* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"../../src/data_generator":13}],8:[function(require,module,exports){
+},{"../../src/data_generator":14}],8:[function(require,module,exports){
+describe("OverlayController", function() {
+  var OverlayController = require("../../src/overlay_controller");
+
+  beforeEach(function() {
+    loadFixtures("overlay_controller.html");
+    this.oc = new OverlayController({
+      intro_fade:   10,
+      overlay_fade: 20,
+      min_delay:    30
+    });
+  });
+
+  describe("#show", function() {
+
+    it("should return a promise", function() {
+      expect( this.oc.show().then ).toBeDefined();
+    });
+
+    it("should hide intro and show overlay", function() {
+      runs(function() {
+        return this.oc.show().then(
+          function() {
+            expect( $("#intro") ).not.toBeVisible();
+            expect( $("#loading") ).toBeVisible();
+          },
+          jasmine.expectFulfilled
+        );
+      });
+    });
+
+  });
+
+  describe("#hide", function() {
+
+    it("should return a promise", function() {
+      expect( this.oc.hide().then ).toBeDefined();
+    });
+
+    it("should hide overlay", function() {
+      $("#intro").hide();
+      $("#loading").show();
+      runs(function() {
+        return this.oc.hide().then(
+          function() {
+            expect( $("#intro") ).not.toBeVisible();
+            expect( $("#loading") ).not.toBeVisible();
+          },
+          jasmine.expectFulfilled
+        );
+      });
+    });
+
+  });
+
+  describe("#reset", function() {
+
+    it("should return a promise", function() {
+      expect( this.oc.reset().then ).toBeDefined();
+    });
+
+    it("should show intro", function() {
+      $("#intro").hide();
+      $("#loading").hide();
+      runs(function() {
+        return this.oc.reset().then(
+          function() {
+            expect( $("#intro") ).toBeVisible();
+            expect( $("#loading") ).not.toBeVisible();
+          },
+          jasmine.expectFulfilled
+        );
+      });
+    });
+
+    it("should hide overlay when it is still active", function() {
+      $("#intro").hide();
+      $("#loading").show();
+      runs(function() {
+        return this.oc.reset().then(
+          function() {
+            expect( $("#intro") ).toBeVisible();
+            expect( $("#loading") ).not.toBeVisible();
+          },
+          jasmine.expectFulfilled
+        );
+      });
+    });
+
+  });
+});
+
+},{"../../src/overlay_controller":15}],9:[function(require,module,exports){
 describe("PromiseController", function() {
   var PromiseController = require("../../src/promise_controller");
 
@@ -2329,7 +2434,7 @@ describe("PromiseController", function() {
 });
 /* vim:set ts=2 sw=2 et: */
 
-},{"../../src/promise_controller":14}],9:[function(require,module,exports){
+},{"../../src/promise_controller":16}],10:[function(require,module,exports){
 describe("promiseWhile()", function() {
   var promiseWhile = require("../../src/promise_while");
   var Q = require("q");
@@ -2380,7 +2485,7 @@ describe("promiseWhile()", function() {
 });
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"../../src/promise_while":15,"q":5}],10:[function(require,module,exports){
+},{"../../src/promise_while":17,"q":5}],11:[function(require,module,exports){
 jasmine.expectFulfilled = function (reason) {
 	expect( "Promise to be fulfilled but it was rejected instead: " + reason ).toBeNull();
 };
@@ -2389,13 +2494,13 @@ jasmine.expectRejected = function (value) {
 	expect( "Promise to be rejected but it was fulfilled instead: " + value ).toBeNull();
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 exports.jQuery = exports.$ = require("jquery");
 require("jquery_ui");
 var Q = require("q");
 Q.longStackSupport = true;
 
-},{"jquery":"0WaVMD","jquery_ui":"Fy2UMz","q":5}],12:[function(require,module,exports){
+},{"jquery":"0WaVMD","jquery_ui":"Fy2UMz","q":5}],13:[function(require,module,exports){
 // ConfirmationController - Controls a confirmation popup
 var Q = require("q");
 var singleton_instance;
@@ -2479,24 +2584,30 @@ ConfirmationController.getInstance = function getInstance() {
 // ConfirmationController.alert {{{1
 // A one-off jQuery-UI replacement for JS alert()
 ConfirmationController.alert = function alert(message, title) {
+  var defer = Q.defer();
+
   if (!message) {
     message = "ConfirmationController.alert called without a message";
   }
+
   $("<div/>").clone().html(message).dialog({
-    title: title || "Alert",
+    title:     title || "Alert",
     resizable: false,
-    modal: true,
+    modal:     true,
+    close:     defer.resolve,
     buttons: {
       "Ok": function() { $(this).dialog("close"); }
     }
   });
+
+  return defer.promise;
 };
 // }}}1
 
 module.exports = ConfirmationController;
 /* vim:set ts=2 sw=2 et fdm=marker: */
 
-},{"q":5}],13:[function(require,module,exports){
+},{"q":5}],14:[function(require,module,exports){
 // DataGenerator - A generator for fake data
 //
 // This module uses a random timeout to delay the resolution of any promise.
@@ -2531,13 +2642,17 @@ DataObject.prototype.getRunningTime = function() {
 // DataObject::start {{{1
 DataObject.prototype.start = function() {
   var _this = this;
-  return Q.delay(this.timeout).then(function() {
+  var defer = Q.defer();
+  Q.delay(this.timeout).then(function() {
     _this.completed_on = new Date().getTime();
     if (_this.isABadWorker) {
-      throw _this;
+      defer.reject(_this);
     }
-    return _this;
+    else {
+      defer.resolve(_this);
+    }
   });
+  return defer.promise;
 };
 
 // DataObject::toString {{{1
@@ -2714,13 +2829,65 @@ module.exports = DataObject;
 
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"./promise_while":15,"q":5}],14:[function(require,module,exports){
+},{"./promise_while":17,"q":5}],15:[function(require,module,exports){
+// OverlayController - Manages the loading overlay and intro sections
+var Q = require("q");
+var $ = require("jquery");
+
+// OverlayController::constructor {{{1
+function OverlayController(timeouts) {
+  /*jshint eqnull:true */
+  this.timeouts = timeouts || {};
+  if (this.timeouts.intro_fade == null) { this.timeouts.intro_fade = 1000; }
+  if (this.timeouts.overlay_fade == null) { this.timeouts.overlay_fade = 100; }
+  if (this.timeouts.min_delay == null) { this.timeouts.min_delay = 500; }
+  this.intro = $("#intro");
+  this.loading_overlay = $("#loading");
+}
+
+// OverlayController::show {{{1
+OverlayController.prototype.show = function show() {
+  var waitForHide = Q.defer(), _this = this;
+  this.intro.hide("fade", this.timeouts.intro_fade, waitForHide.resolve);
+  return waitForHide.promise.then(function() {
+    // Add an artificial delay so the user can see the loading screen. Some
+    // browsers might run faster then the user interface can catch up.
+    var waitForMinDelay = Q.delay(_this.timeouts.min_delay);
+    var waitForShow = Q.defer();
+    _this.loading_overlay.show("fade", _this.timeouts.overlay_fade, waitForShow.resolve);
+    return Q.all([waitForShow.promise, waitForMinDelay]);
+  });
+};
+
+// OverlayController::hide {{{1
+OverlayController.prototype.hide = function hide() {
+  var waitForHide = Q.defer();
+  this.loading_overlay.hide("fade", this.timeouts.overlay_fade, waitForHide.resolve);
+  return waitForHide.promise;
+};
+
+// OverlayController::reset {{{1
+OverlayController.prototype.reset = function reset() {
+  var _this = this;
+  return this.hide().then(function() {
+    var waitForShow = Q.defer();
+    _this.intro.show("blind", _this.timeouts.intro_fade, waitForShow.resolve);
+    return waitForShow.promise;
+  });
+};
+// }}}1
+
+module.exports = OverlayController;
+/* vim:set ts=2 sw=2 et fdm=marker: */
+
+},{"jquery":"0WaVMD","q":5}],16:[function(require,module,exports){
 // PromiseController - Control the building and displaying of data objects
 var Q                      = require("q");
 var $                      = require("jquery");
 var DataGenerator          = require("./data_generator");
 var ConfirmationController = require("./confirmation_controller");
 var promiseWhile           = require("./promise_while");
+var OverlayController      = require("./overlay_controller");
 
 // PromiseController {{{1
 function PromiseController() {
@@ -2733,11 +2900,10 @@ function PromiseController() {
   this.info_divs = {
     live_update: $("#run-info"),
     count:       $("#count"),
-    summary:     $("#info"),
-    intro:       $("#intro")
+    summary:     $("#info")
   };
-  this.loading_overlay = $("#loading");
   this.content_list = $("#list");
+  this.overlay = new OverlayController();
 }
 
 // PromiseController::init {{{1
@@ -2816,21 +2982,12 @@ PromiseController.prototype.disableControls= function disableControls() {
 
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
-  var waitForHide = Q.defer(), _this = this;
-  this.info_divs.intro.hide("fade", 1000, waitForHide.resolve);
-  return waitForHide.promise.then(function() {
-    var waitForShow = Q.defer();
-    _this.loading_overlay.show("fade", 100, waitForShow.resolve);
-    // Add an artificial delay so the user can see the loading screen. Some
-    // browsers might run faster then the user interface can catch up.
-    return waitForShow.promise.delay(500);
-  });
+  return this.overlay.show();
 };
 
 // PromiseController::hideLoading {{{1
 PromiseController.prototype.hideLoading = function hideLoading() {
-  this.loading_overlay.hide();
-  return arguments[0];
+  return this.overlay.hide();
 };
 
 // PromiseController::finish {{{1
@@ -2978,16 +3135,14 @@ PromiseController.prototype.reset = function reset() {
   this.info_divs.live_update.hide();
   this.info_divs.summary.hide();
   this.content_list.empty();
-  Q.delay(1).then(function() {
-    _this.info_divs.intro.show("blind", 1000);
-  });
+  this.overlay.reset();
 };
 // }}}1
 
 module.exports = PromiseController;
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"./confirmation_controller":12,"./data_generator":13,"./promise_while":15,"jquery":"0WaVMD","q":5}],15:[function(require,module,exports){
+},{"./confirmation_controller":13,"./data_generator":14,"./overlay_controller":15,"./promise_while":17,"jquery":"0WaVMD","q":5}],17:[function(require,module,exports){
 // PromiseWhile - an extention to do for loops in a non-blocking way
 //
 // Taken from http://stackoverflow.com/a/17238793/227176
@@ -3021,5 +3176,5 @@ function promiseWhile(condition, body) {
 
 module.exports = promiseWhile;
 
-},{"q":5}]},{},[10,11,6,7,8,9])
+},{"q":5}]},{},[11,12,6,7,8,9,10])
 ;

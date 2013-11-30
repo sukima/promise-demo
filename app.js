@@ -2034,32 +2034,53 @@ module.exports={
 
 },{}],7:[function(require,module,exports){
 var $ = require("jquery");
-var jq_alert = require("./confirmation_controller").alert;
-var PromiseController = require("./promise_controller");
 require("jquery_ui");
 
-function showAbout() {
+// showAbout {{{1
+exports.showAbout = function showAbout() {
   var pkg = require("../package.json");
   var message = "Promise-Demo<br>Version " + pkg.version;
+  var jq_alert = require("./confirmation_controller").alert;
+
+
   if (pkg.author) {
     message += "<br>By " + pkg.author.replace(/\s*[\(<].*$/, "");
   }
+
   if (pkg.contributors) {
     pkg.contributors.forEach(function(contributor) {
       message += ", " + contributor.name;
     });
   }
-  jq_alert(message);
-}
 
-$(function init() {
-  var appController = new PromiseController();
-  appController.init();
-  $("#logo").click(showAbout);
-  $("a.button").button();
-});
+  return jq_alert(message);
+};
 
-},{"../package.json":6,"./confirmation_controller":8,"./promise_controller":10,"jquery":"0WaVMD","jquery_ui":"Fy2UMz"}],8:[function(require,module,exports){
+// init {{{1
+exports.init = function init(controller) {
+  return $(function() {
+    var AppController;
+
+    switch (controller) {
+      // case "RaceController":
+      //   AppController = require("./race_controller");
+      //   break;
+      default:
+        AppController = require("./promise_controller");
+    }
+
+    (new AppController()).init();
+
+    $("#logo").click(exports.showAbout);
+    $("a.button").button();
+  });
+};
+// }}}1
+
+window.APP = module.exports;
+/* vim:set ts=2 sw=2 et fdm=marker: */
+
+},{"../package.json":6,"./confirmation_controller":8,"./promise_controller":11,"jquery":"0WaVMD","jquery_ui":"Fy2UMz"}],8:[function(require,module,exports){
 // ConfirmationController - Controls a confirmation popup
 var Q = require("q");
 var singleton_instance;
@@ -2143,17 +2164,23 @@ ConfirmationController.getInstance = function getInstance() {
 // ConfirmationController.alert {{{1
 // A one-off jQuery-UI replacement for JS alert()
 ConfirmationController.alert = function alert(message, title) {
+  var defer = Q.defer();
+
   if (!message) {
     message = "ConfirmationController.alert called without a message";
   }
+
   $("<div/>").clone().html(message).dialog({
-    title: title || "Alert",
+    title:     title || "Alert",
     resizable: false,
-    modal: true,
+    modal:     true,
+    close:     defer.resolve,
     buttons: {
       "Ok": function() { $(this).dialog("close"); }
     }
   });
+
+  return defer.promise;
 };
 // }}}1
 
@@ -2195,13 +2222,17 @@ DataObject.prototype.getRunningTime = function() {
 // DataObject::start {{{1
 DataObject.prototype.start = function() {
   var _this = this;
-  return Q.delay(this.timeout).then(function() {
+  var defer = Q.defer();
+  Q.delay(this.timeout).then(function() {
     _this.completed_on = new Date().getTime();
     if (_this.isABadWorker) {
-      throw _this;
+      defer.reject(_this);
     }
-    return _this;
+    else {
+      defer.resolve(_this);
+    }
   });
+  return defer.promise;
 };
 
 // DataObject::toString {{{1
@@ -2378,13 +2409,65 @@ module.exports = DataObject;
 
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"./promise_while":11,"q":5}],10:[function(require,module,exports){
+},{"./promise_while":12,"q":5}],10:[function(require,module,exports){
+// OverlayController - Manages the loading overlay and intro sections
+var Q = require("q");
+var $ = require("jquery");
+
+// OverlayController::constructor {{{1
+function OverlayController(timeouts) {
+  /*jshint eqnull:true */
+  this.timeouts = timeouts || {};
+  if (this.timeouts.intro_fade == null) { this.timeouts.intro_fade = 1000; }
+  if (this.timeouts.overlay_fade == null) { this.timeouts.overlay_fade = 100; }
+  if (this.timeouts.min_delay == null) { this.timeouts.min_delay = 500; }
+  this.intro = $("#intro");
+  this.loading_overlay = $("#loading");
+}
+
+// OverlayController::show {{{1
+OverlayController.prototype.show = function show() {
+  var waitForHide = Q.defer(), _this = this;
+  this.intro.hide("fade", this.timeouts.intro_fade, waitForHide.resolve);
+  return waitForHide.promise.then(function() {
+    // Add an artificial delay so the user can see the loading screen. Some
+    // browsers might run faster then the user interface can catch up.
+    var waitForMinDelay = Q.delay(_this.timeouts.min_delay);
+    var waitForShow = Q.defer();
+    _this.loading_overlay.show("fade", _this.timeouts.overlay_fade, waitForShow.resolve);
+    return Q.all([waitForShow.promise, waitForMinDelay]);
+  });
+};
+
+// OverlayController::hide {{{1
+OverlayController.prototype.hide = function hide() {
+  var waitForHide = Q.defer();
+  this.loading_overlay.hide("fade", this.timeouts.overlay_fade, waitForHide.resolve);
+  return waitForHide.promise;
+};
+
+// OverlayController::reset {{{1
+OverlayController.prototype.reset = function reset() {
+  var _this = this;
+  return this.hide().then(function() {
+    var waitForShow = Q.defer();
+    _this.intro.show("blind", _this.timeouts.intro_fade, waitForShow.resolve);
+    return waitForShow.promise;
+  });
+};
+// }}}1
+
+module.exports = OverlayController;
+/* vim:set ts=2 sw=2 et fdm=marker: */
+
+},{"jquery":"0WaVMD","q":5}],11:[function(require,module,exports){
 // PromiseController - Control the building and displaying of data objects
 var Q                      = require("q");
 var $                      = require("jquery");
 var DataGenerator          = require("./data_generator");
 var ConfirmationController = require("./confirmation_controller");
 var promiseWhile           = require("./promise_while");
+var OverlayController      = require("./overlay_controller");
 
 // PromiseController {{{1
 function PromiseController() {
@@ -2397,11 +2480,10 @@ function PromiseController() {
   this.info_divs = {
     live_update: $("#run-info"),
     count:       $("#count"),
-    summary:     $("#info"),
-    intro:       $("#intro")
+    summary:     $("#info")
   };
-  this.loading_overlay = $("#loading");
   this.content_list = $("#list");
+  this.overlay = new OverlayController();
 }
 
 // PromiseController::init {{{1
@@ -2480,21 +2562,12 @@ PromiseController.prototype.disableControls= function disableControls() {
 
 // PromiseController::showLoading {{{1
 PromiseController.prototype.showLoading = function showLoading() {
-  var waitForHide = Q.defer(), _this = this;
-  this.info_divs.intro.hide("fade", 1000, waitForHide.resolve);
-  return waitForHide.promise.then(function() {
-    var waitForShow = Q.defer();
-    _this.loading_overlay.show("fade", 100, waitForShow.resolve);
-    // Add an artificial delay so the user can see the loading screen. Some
-    // browsers might run faster then the user interface can catch up.
-    return waitForShow.promise.delay(500);
-  });
+  return this.overlay.show();
 };
 
 // PromiseController::hideLoading {{{1
 PromiseController.prototype.hideLoading = function hideLoading() {
-  this.loading_overlay.hide();
-  return arguments[0];
+  return this.overlay.hide();
 };
 
 // PromiseController::finish {{{1
@@ -2642,16 +2715,14 @@ PromiseController.prototype.reset = function reset() {
   this.info_divs.live_update.hide();
   this.info_divs.summary.hide();
   this.content_list.empty();
-  Q.delay(1).then(function() {
-    _this.info_divs.intro.show("blind", 1000);
-  });
+  this.overlay.reset();
 };
 // }}}1
 
 module.exports = PromiseController;
 /* vim:set sw=2 ts=2 et fdm=marker: */
 
-},{"./confirmation_controller":8,"./data_generator":9,"./promise_while":11,"jquery":"0WaVMD","q":5}],11:[function(require,module,exports){
+},{"./confirmation_controller":8,"./data_generator":9,"./overlay_controller":10,"./promise_while":12,"jquery":"0WaVMD","q":5}],12:[function(require,module,exports){
 // PromiseWhile - an extention to do for loops in a non-blocking way
 //
 // Taken from http://stackoverflow.com/a/17238793/227176
