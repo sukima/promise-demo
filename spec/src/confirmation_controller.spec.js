@@ -20,8 +20,7 @@ describe("ConfirmationController", function() {
   describe("#promise", function() {
 
     it("should return a promise", function() {
-      var result = this.cc.promise();
-      expect( result.then ).toBeDefined();
+      expect( this.cc.promise() ).toBeAPromise();
     });
 
     it("should reject the promise if dialog is closed", function() {
@@ -138,7 +137,7 @@ describe("ConfirmationController", function() {
     });
 
     it("should return a promise", function() {
-      expect( ConfirmationController.alert().then ).toBeDefined();
+      expect( ConfirmationController.alert() ).toBeAPromise();
     });
 
     it("should resolve the promise when dialog is closed", function() {

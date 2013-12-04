@@ -41,7 +41,7 @@ describe("DataGenerator", function() {
       });
 
       it("should return a promise", function() {
-        expect( this.test_obj.start().then ).toBeDefined();
+        expect( this.test_obj.start() ).toBeAPromise();
       });
 
       it("should assign a completed_on when resolved", function() {
@@ -96,7 +96,7 @@ describe("DataGenerator", function() {
   describe("#buildData (static)", function() {
 
     it("should return a promise", function() {
-      expect( DataGenerator.buildData(1).then ).toBeDefined();
+      expect( DataGenerator.buildData(1) ).toBeAPromise();
     });
 
     it("should create an array of data objects", function() {

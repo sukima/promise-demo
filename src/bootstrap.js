@@ -27,9 +27,9 @@ exports.init = function init(controller) {
     var AppController;
 
     switch (controller) {
-      // case "RaceController":
-      //   AppController = require("./race_controller");
-      //   break;
+      case "RaceController":
+        AppController = require("./race_controller");
+        break;
       default:
         AppController = require("./promise_controller");
     }
